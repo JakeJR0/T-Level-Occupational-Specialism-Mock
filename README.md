@@ -10,7 +10,7 @@
 - [User Requirements](#user-requirements)
 - [Languages](#languages)
   - [Application](#application)
-  - [Chat API](#Chat-api)
+  - [Chat API](#chat-api)
 - [Future Development](#future-development)
 - [Pages](#pages)
 
