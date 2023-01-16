@@ -6,7 +6,8 @@ $color_palette: (
     "secondary": #CFF27E,
     "text": #000,
     "default_form": #D9D9D9,
-    "default_form_button": #CFF27E
+    "default_form_button": #CFF27E,
+    "error": #d47a7a,
 );
 
 * {
@@ -17,6 +18,10 @@ $color_palette: (
 body {
     background-color: map-get($color_palette, "background");
     margin: 0;
+}
+
+.center-text {
+    text-align: center;
 }
 
 @import "_nav.scss";
