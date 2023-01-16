@@ -1,0 +1,23 @@
+$navbar_height: 80px;
+$color_palette: (
+    "navbar": #4E3C43,
+    "background": #F4D6CC,
+    "main": #0DC9DE,
+    "secondary": #CFF27E,
+    "text": #000,
+    "default_form": #D9D9D9,
+    "default_form_button": #CFF27E
+);
+
+* {
+    color: map-get($color_palette, "text");
+    font-family: "Airbnb Cereal", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: map-get($color_palette, "background");
+    margin: 0;
+}
+
+@import "_nav.scss";
+@import "_forms.scss";
