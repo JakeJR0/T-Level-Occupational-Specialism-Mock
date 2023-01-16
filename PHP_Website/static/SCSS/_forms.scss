@@ -1,0 +1,76 @@
+
+.basic-form-container {
+    width: 600px;
+    height: auto;
+    border-radius: 12px;
+    text-align: center;
+    padding: 2rem;
+    padding-top: 0.5rem;
+    background-color: map-get($color_palette, "default_form");
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+
+        input {
+            margin: auto;
+            width: calc(90% - 1.5rem);
+            height: 40px;
+            border-radius: 8px;
+            padding-inline: 1rem;
+            font-size: 1.2rem;
+        };
+
+        textarea {
+            margin: auto;
+            width: calc(90% - 1.5rem);
+            height: 200px;
+            border-radius: 8px;
+            resize: none;
+            padding: 1rem;
+        };
+
+        input[type="submit"], button[type="submit"] {
+            width: 90%;
+            height: 40px;
+            border-radius: 8px;
+            background-color: map-get($color_palette, "default_form_button");
+            color: black;
+            font-weight: bold;
+            margin: auto;
+            cursor: pointer;
+            transition: filter 0.2s ease-in-out;
+
+            &:hover {
+                filter: brightness(1.1) saturate(1.1);
+            }
+        }
+
+        input, textarea, button {
+            box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
+            border: none;
+            transition: border 0.3s ease-in-out;
+            font-size: 1.2rem;
+
+            &:active, &:focus {
+                border: none;
+                outline: 2px solid map-get($color_palette, "main");
+            }
+        }
+    }
+
+    &.center-both-axis {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+}
+
