@@ -41,6 +41,8 @@ ToKa Fitness currently provides customers with:
 - [ ] Forum
 - [ ] Free Content
 - [ ] Paid Content
+- [ ] Chat
+- [ ] Contact Form
 
 ## User Requirements
 
