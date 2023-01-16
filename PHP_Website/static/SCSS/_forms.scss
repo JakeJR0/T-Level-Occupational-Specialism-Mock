@@ -13,12 +13,59 @@
     gap: 1.5rem;
     box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
 
+    .form-title {
+        h1 {
+            margin-bottom: 10px;
+            padding-top: 0;
+        }
+        p {
+            margin-top: 0;
+            padding-top: 0;
+        }
+    }
+
+    .errors {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+
+        p {
+            width: 90%;
+            margin: 0;
+            height: 20px;
+            background-color: map-get($color_palette, "error");
+            color: white;
+            border-radius: 8px;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
+        }
+    }
+
+    .success {
+        width: 80%;
+        margin: 0;
+        height: 20px;
+        background-color: map-get($color_palette, "secondary");
+        color: black;
+        border-radius: 8px;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        margin: auto;
+        font-weight: bold;
+        box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
+    }
+
     form {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
 
-        input {
+        input:not(input[type="checkbox"]):not(input[type="radio"]) {
             margin: auto;
             width: calc(90% - 1.5rem);
             height: 40px;
@@ -26,6 +73,61 @@
             padding-inline: 1rem;
             font-size: 1.2rem;
         };
+
+        .radio-option {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+
+            div {
+                width: 80%;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+                justify-content: center;
+                margin-top: 12px;
+                margin-bottom: 12px;
+
+
+
+                input[type="radio"] {
+                    width: 20px;
+                    height: 20px;
+                    appearance: none;
+                    display: inline-block;
+                    background-clip: content-box;
+                    border: 2px solid #000;
+                    border-radius: 50%;
+                    margin-top: 0;
+                    margin-bottom: 0;
+                    cursor: pointer;
+
+                    &:checked {
+                        background-color: map-get($color_palette, "main");
+                        box-shadow: none;
+
+                        & + label {
+                            font-weight: bold;
+                        }
+                    }
+                }
+
+                p:first-child {
+                    font-size: 1.2rem;
+                    font-weight: normal;
+                    margin-bottom: 0;
+                }
+
+                p {
+                    font-size: 0.8rem;
+                    font-weight: normal;
+                    margin: 0;
+                }
+            }
+        }
 
         textarea {
             margin: auto;
@@ -52,7 +154,15 @@
             }
         }
 
-        input, textarea, button {
+        a {
+            text-decoration: none;
+            background-image: linear-gradient(0deg, map-get($color_palette, "main"), #033035, black);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        input:not(input[type="radio"]), textarea, button {
             box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
             border: none;
             transition: border 0.3s ease-in-out;
