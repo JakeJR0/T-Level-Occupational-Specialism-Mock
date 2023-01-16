@@ -8,6 +8,10 @@ body {
   margin: 0;
 }
 
+.center-text {
+  text-align: center;
+}
+
 .navbar {
   background-color: #4E3C43;
   width: 100vw;
@@ -128,18 +132,105 @@ body {
   gap: 1.5rem;
   box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
 }
+.basic-form-container .form-title h1 {
+  margin-bottom: 10px;
+  padding-top: 0;
+}
+.basic-form-container .form-title p {
+  margin-top: 0;
+  padding-top: 0;
+}
+.basic-form-container .errors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.basic-form-container .errors p {
+  width: 90%;
+  margin: 0;
+  height: 20px;
+  background-color: #d47a7a;
+  color: white;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
+}
+.basic-form-container .success {
+  width: 80%;
+  margin: 0;
+  height: 20px;
+  background-color: #CFF27E;
+  color: black;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  margin: auto;
+  font-weight: bold;
+  box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
+}
 .basic-form-container form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
-.basic-form-container form input {
+.basic-form-container form input:not(input[type=checkbox]):not(input[type=radio]) {
   margin: auto;
   width: calc(90% - 1.5rem);
   height: 40px;
   border-radius: 8px;
   padding-inline: 1rem;
   font-size: 1.2rem;
+}
+.basic-form-container form .radio-option {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+.basic-form-container form .radio-option div {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.basic-form-container form .radio-option div input[type=radio] {
+  width: 20px;
+  height: 20px;
+  appearance: none;
+  display: inline-block;
+  background-clip: content-box;
+  border: 2px solid #000;
+  border-radius: 50%;
+  margin-top: 0;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+.basic-form-container form .radio-option div input[type=radio]:checked {
+  background-color: #0DC9DE;
+  box-shadow: none;
+}
+.basic-form-container form .radio-option div input[type=radio]:checked + label {
+  font-weight: bold;
+}
+.basic-form-container form .radio-option div p:first-child {
+  font-size: 1.2rem;
+  font-weight: normal;
+  margin-bottom: 0;
+}
+.basic-form-container form .radio-option div p {
+  font-size: 0.8rem;
+  font-weight: normal;
+  margin: 0;
 }
 .basic-form-container form textarea {
   margin: auto;
@@ -163,13 +254,20 @@ body {
 .basic-form-container form input[type=submit]:hover, .basic-form-container form button[type=submit]:hover {
   filter: brightness(1.1) saturate(1.1);
 }
-.basic-form-container form input, .basic-form-container form textarea, .basic-form-container form button {
+.basic-form-container form a {
+  text-decoration: none;
+  background-image: linear-gradient(0deg, #0DC9DE, #033035, black);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.basic-form-container form input:not(input[type=radio]), .basic-form-container form textarea, .basic-form-container form button {
   box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
   border: none;
   transition: border 0.3s ease-in-out;
   font-size: 1.2rem;
 }
-.basic-form-container form input:active, .basic-form-container form input:focus, .basic-form-container form textarea:active, .basic-form-container form textarea:focus, .basic-form-container form button:active, .basic-form-container form button:focus {
+.basic-form-container form input:not(input[type=radio]):active, .basic-form-container form input:not(input[type=radio]):focus, .basic-form-container form textarea:active, .basic-form-container form textarea:focus, .basic-form-container form button:active, .basic-form-container form button:focus {
   border: none;
   outline: 2px solid #0DC9DE;
 }
