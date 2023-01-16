@@ -10,7 +10,7 @@
 - [User Requirements](#user-requirements)
 - [Languages](#languages)
   - [Application](#application)
-  - [Form API](#form-api)
+  - [Chat API](#Chat-api)
 - [Future Development](#future-development)
 - [Pages](#pages)
 
@@ -63,7 +63,7 @@ ToKa Fitness currently provides customers with:
 - JavaScript
 - SCSS
 
-### Form API
+### Chat API
 
 - Python
 - Flask
