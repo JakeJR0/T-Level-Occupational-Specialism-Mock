@@ -1,5 +1,5 @@
 
-.basic-form-container {
+.basic-form {
     width: 600px;
     height: auto;
     border-radius: 12px;
@@ -174,13 +174,14 @@
             }
         }
     }
+}
 
-    &.center-both-axis {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
+.centred-form-container {
+    width: 100vw;
+    height: calc(100vh - $navbar_height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 

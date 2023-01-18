@@ -1,0 +1,44 @@
+
+.badges {
+    width: auto;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.badge {
+    &.small {
+        width: 50px;
+        height: 20px;
+    }
+
+    &.medium {
+        width: 100px;
+        height: 30px;
+    }
+
+    &.large {
+        width: 150px;
+        height: 40px;
+    }
+
+    border-radius: 8px;
+    background-color: map-get($color_palette, "default_form");
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.paid {
+        background-color: map-get($color_palette, "warning");
+        color: #000;
+    }
+
+    &.free {
+        background-color: map-get($color_palette, "success");
+        color: #000;
+    }
+}

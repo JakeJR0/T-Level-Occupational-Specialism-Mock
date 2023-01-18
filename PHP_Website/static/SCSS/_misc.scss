@@ -1,0 +1,174 @@
+
+.img-text-container {
+    width: 100vw;
+    height: 100px;
+    position: relative;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .banner {
+        width: 100%;
+        height: 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        background-color: rgba(map-get($color_palette, "main"), 0.8);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+
+        *:not(.btn) {
+            color: white;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        &.top {
+            top: 0;
+            transform: translate(-50%, 0);
+        }
+
+        &.bottom {
+            top: auto;
+            bottom: 0;
+            transform: translate(-50%, 0);
+        }
+
+        &.hidden-background {
+            background-color: transparent;
+        }
+    }
+
+
+    &.auto {
+        height: auto;
+    }
+
+    &.half-width {
+        width: 50vw;
+        height: auto;
+        margin: 0 auto;
+    }
+
+    &.half-height {
+        height: 50vh;
+    }
+
+    img {
+        &.rounded {
+            border-radius: 12px;
+        }
+    }
+}
+
+.list-container {
+    width: 80%;
+    height: max(300px, 50vh);
+    margin: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background-color: map-get($color_palette, "default_form");
+    transition: filter 0.2s ease-in-out;
+
+    .list-option {
+        width: calc(100% - 2rem);
+        height: auto;
+        border-radius: 12px;
+        background-color: map-get($color_palette, "default_form");
+        transition: background-color 0.2s ease-in-out;
+        cursor: pointer;
+        text-decoration: none;
+
+        &:hover {
+            filter: contrast(0.9);
+        }
+
+        display: grid;
+        grid-template-areas:
+            "title title title"
+            "created last-updated blank";
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+
+        .title {
+            // width: 20% into px;
+            grid-area: title;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .created {
+            grid-area: created;
+            font-size: 0.8rem;
+        }
+
+        .last-updated {
+            grid-area: last-updated;
+            font-size: 0.8rem;
+        }
+
+        .blank {
+            grid-area: blank;
+        }
+    }
+
+    .page-counter {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 1rem;
+
+        .page-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .page-action {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+    }
+}

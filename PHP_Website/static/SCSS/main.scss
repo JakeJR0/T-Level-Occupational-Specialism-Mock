@@ -8,6 +8,8 @@ $color_palette: (
     "default_form": #D9D9D9,
     "default_form_button": #CFF27E,
     "error": #d47a7a,
+    "success": #71cc87,
+    "warning": #ffd39c
 );
 
 * {
@@ -18,11 +20,31 @@ $color_palette: (
 body {
     background-color: map-get($color_palette, "background");
     margin: 0;
+
 }
 
 .center-text {
     text-align: center;
 }
 
+.page-title {
+    text-align: center;
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 0;
+        padding: 0;
+    }
+
+    p {
+        font-size: 1rem;
+        margin-top: 0;
+        margin-bottom: 5rem;
+        padding: 0;
+    }
+}
+
 @import "_nav.scss";
+@import "_buttons.scss";
 @import "_forms.scss";
+@import "_badges.scss";
+@import "_misc.scss";

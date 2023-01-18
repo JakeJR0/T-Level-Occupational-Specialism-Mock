@@ -1,0 +1,31 @@
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.2rem;
+    background-color: map-get($color_palette, "default_form");
+    padding: 0.4rem;
+    cursor: pointer;
+    color: #000;
+    text-decoration: none;
+    -webkit-user-drag: none;
+    transition: filter 0.2s ease-in-out;
+    text-align: center;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+
+    &:hover {
+        filter: brightness(1.1);
+    }
+
+    &:active {
+        filter: brightness(1.2);
+    }
+}
