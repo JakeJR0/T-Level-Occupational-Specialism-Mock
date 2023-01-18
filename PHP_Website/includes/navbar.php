@@ -1,11 +1,31 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once 'includes/user.php';
+
 $navbar_pages = array();
-$navbar_pages[] = array('name' => 'Home', 'url' => 'index.php');
-$navbar_pages[] = array('name' => 'Articles', 'url' => 'articles.php');
-$navbar_pages[] = array('name' => 'Login', 'url' => 'login.php');
-$navbar_pages[] = array('name' => 'Forum', 'url' => 'forum.php');
-$navbar_pages[] = array('name' => 'About', 'url' => 'about.php');
-$navbar_pages[] = array('name' => 'Contact', 'url' => 'contact.php');
+$client = $_SESSION["user"] ?? null;
+$client = unserialize($client);
+
+if ($client == null || $client->logged_in == false) {
+    $navbar_pages[] = array('name' => 'Home', 'url' => 'index.php');
+    $navbar_pages[] = array('name' => 'Articles', 'url' => 'articles.php');
+    $navbar_pages[] = array('name' => 'Login', 'url' => 'login.php');
+    $navbar_pages[] = array('name' => 'Forum', 'url' => 'forum.php');
+    $navbar_pages[] = array('name' => 'About', 'url' => 'about.php');
+    $navbar_pages[] = array('name' => 'Contact', 'url' => 'contact.php');
+} else {
+    $navbar_pages[] = array('name' => 'Home', 'url' => 'index.php');
+    $navbar_pages[] = array('name' => 'Articles', 'url' => 'articles.php');
+    $navbar_pages[] = array('name' => 'Forum', 'url' => 'forum.php');
+    $navbar_pages[] = array('name' => 'About', 'url' => 'about.php');
+    $navbar_pages[] = array('name' => 'Contact', 'url' => 'contact.php');
+    $navbar_pages[] = array('name' => 'Logout', 'url' => 'logout.php');
+}
+
+
 ?>
 
 <!DOCTYPE html>

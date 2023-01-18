@@ -12,6 +12,21 @@ body {
   text-align: center;
 }
 
+.page-title {
+  text-align: center;
+}
+.page-title h1 {
+  font-size: 3rem;
+  margin-bottom: 0;
+  padding: 0;
+}
+.page-title p {
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 5rem;
+  padding: 0;
+}
+
 .navbar {
   background-color: #4E3C43;
   width: 100vw;
@@ -118,7 +133,36 @@ body {
     transform: rotate(90deg);
   }
 }
-.basic-form-container {
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1.2rem;
+  background-color: #D9D9D9;
+  padding: 0.4rem;
+  cursor: pointer;
+  color: #000;
+  text-decoration: none;
+  -webkit-user-drag: none;
+  transition: filter 0.2s ease-in-out;
+  text-align: center;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+.btn:hover {
+  filter: brightness(1.1);
+}
+.btn:active {
+  filter: brightness(1.2);
+}
+
+.basic-form {
   width: 600px;
   height: auto;
   border-radius: 12px;
@@ -132,15 +176,15 @@ body {
   gap: 1.5rem;
   box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
 }
-.basic-form-container .form-title h1 {
+.basic-form .form-title h1 {
   margin-bottom: 10px;
   padding-top: 0;
 }
-.basic-form-container .form-title p {
+.basic-form .form-title p {
   margin-top: 0;
   padding-top: 0;
 }
-.basic-form-container .errors {
+.basic-form .errors {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -148,7 +192,7 @@ body {
   justify-content: center;
   margin-bottom: 12px;
 }
-.basic-form-container .errors p {
+.basic-form .errors p {
   width: 90%;
   margin: 0;
   height: 20px;
@@ -160,7 +204,7 @@ body {
   font-weight: bold;
   box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
 }
-.basic-form-container .success {
+.basic-form .success {
   width: 80%;
   margin: 0;
   height: 20px;
@@ -173,12 +217,12 @@ body {
   font-weight: bold;
   box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
 }
-.basic-form-container form {
+.basic-form form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
-.basic-form-container form input:not(input[type=checkbox]):not(input[type=radio]) {
+.basic-form form input:not(input[type=checkbox]):not(input[type=radio]) {
   margin: auto;
   width: calc(90% - 1.5rem);
   height: 40px;
@@ -186,14 +230,14 @@ body {
   padding-inline: 1rem;
   font-size: 1.2rem;
 }
-.basic-form-container form .radio-option {
+.basic-form form .radio-option {
   display: flex;
   flex-direction: row;
   gap: 1rem;
   align-items: center;
   justify-content: center;
 }
-.basic-form-container form .radio-option div {
+.basic-form form .radio-option div {
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -203,7 +247,7 @@ body {
   margin-top: 12px;
   margin-bottom: 12px;
 }
-.basic-form-container form .radio-option div input[type=radio] {
+.basic-form form .radio-option div input[type=radio] {
   width: 20px;
   height: 20px;
   appearance: none;
@@ -215,24 +259,24 @@ body {
   margin-bottom: 0;
   cursor: pointer;
 }
-.basic-form-container form .radio-option div input[type=radio]:checked {
+.basic-form form .radio-option div input[type=radio]:checked {
   background-color: #0DC9DE;
   box-shadow: none;
 }
-.basic-form-container form .radio-option div input[type=radio]:checked + label {
+.basic-form form .radio-option div input[type=radio]:checked + label {
   font-weight: bold;
 }
-.basic-form-container form .radio-option div p:first-child {
+.basic-form form .radio-option div p:first-child {
   font-size: 1.2rem;
   font-weight: normal;
   margin-bottom: 0;
 }
-.basic-form-container form .radio-option div p {
+.basic-form form .radio-option div p {
   font-size: 0.8rem;
   font-weight: normal;
   margin: 0;
 }
-.basic-form-container form textarea {
+.basic-form form textarea {
   margin: auto;
   width: calc(90% - 1.5rem);
   height: 200px;
@@ -240,7 +284,7 @@ body {
   resize: none;
   padding: 1rem;
 }
-.basic-form-container form input[type=submit], .basic-form-container form button[type=submit] {
+.basic-form form input[type=submit], .basic-form form button[type=submit] {
   width: 90%;
   height: 40px;
   border-radius: 8px;
@@ -251,29 +295,215 @@ body {
   cursor: pointer;
   transition: filter 0.2s ease-in-out;
 }
-.basic-form-container form input[type=submit]:hover, .basic-form-container form button[type=submit]:hover {
+.basic-form form input[type=submit]:hover, .basic-form form button[type=submit]:hover {
   filter: brightness(1.1) saturate(1.1);
 }
-.basic-form-container form a {
+.basic-form form a {
   text-decoration: none;
   background-image: linear-gradient(0deg, #0DC9DE, #033035, black);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
-.basic-form-container form input:not(input[type=radio]), .basic-form-container form textarea, .basic-form-container form button {
+.basic-form form input:not(input[type=radio]), .basic-form form textarea, .basic-form form button {
   box-shadow: 0px 0px 5px 0px rgb(18, 18, 18);
   border: none;
   transition: border 0.3s ease-in-out;
   font-size: 1.2rem;
 }
-.basic-form-container form input:not(input[type=radio]):active, .basic-form-container form input:not(input[type=radio]):focus, .basic-form-container form textarea:active, .basic-form-container form textarea:focus, .basic-form-container form button:active, .basic-form-container form button:focus {
+.basic-form form input:not(input[type=radio]):active, .basic-form form input:not(input[type=radio]):focus, .basic-form form textarea:active, .basic-form form textarea:focus, .basic-form form button:active, .basic-form form button:focus {
   border: none;
   outline: 2px solid #0DC9DE;
 }
-.basic-form-container.center-both-axis {
+
+.centred-form-container {
+  width: 100vw;
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.badges {
+  width: auto;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.badge {
+  border-radius: 8px;
+  background-color: #D9D9D9;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.badge.small {
+  width: 50px;
+  height: 20px;
+}
+.badge.medium {
+  width: 100px;
+  height: 30px;
+}
+.badge.large {
+  width: 150px;
+  height: 40px;
+}
+.badge.paid {
+  background-color: #ffd39c;
+  color: #000;
+}
+.badge.free {
+  background-color: #71cc87;
+  color: #000;
+}
+
+.img-text-container {
+  width: 100vw;
+  height: 100px;
+  position: relative;
+}
+.img-text-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.img-text-container .banner {
+  width: 100%;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(13, 201, 222, 0.8);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  text-align: center;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+.img-text-container .banner *:not(.btn) {
+  color: white;
+}
+.img-text-container .banner h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.img-text-container .banner h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.img-text-container .banner.top {
+  top: 0;
+  transform: translate(-50%, 0);
+}
+.img-text-container .banner.bottom {
+  top: auto;
+  bottom: 0;
+  transform: translate(-50%, 0);
+}
+.img-text-container .banner.hidden-background {
+  background-color: transparent;
+}
+.img-text-container.auto {
+  height: auto;
+}
+.img-text-container.half-width {
+  width: 50vw;
+  height: auto;
+  margin: 0 auto;
+}
+.img-text-container.half-height {
+  height: 50vh;
+}
+.img-text-container img.rounded {
+  border-radius: 12px;
+}
+
+.list-container {
+  width: 80%;
+  height: max(300px, 50vh);
+  margin: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: #D9D9D9;
+  transition: filter 0.2s ease-in-out;
+}
+.list-container .list-option {
+  width: calc(100% - 2rem);
+  height: auto;
+  border-radius: 12px;
+  background-color: #D9D9D9;
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+  display: grid;
+  grid-template-areas: "title title title" "created last-updated blank";
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+.list-container .list-option:hover {
+  filter: contrast(0.9);
+}
+.list-container .list-option .title {
+  grid-area: title;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2rem;
+}
+.list-container .list-option .created {
+  grid-area: created;
+  font-size: 0.8rem;
+}
+.list-container .list-option .last-updated {
+  grid-area: last-updated;
+  font-size: 0.8rem;
+}
+.list-container .list-option .blank {
+  grid-area: blank;
+}
+.list-container .page-counter {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+.list-container .page-counter .page-number {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.list-container .page-counter .page-action {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+.list-container .page-counter .hidden {
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }

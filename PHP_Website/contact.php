@@ -70,29 +70,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include 'includes/header.php';
     ?>
     <body>
-        <div class="basic-form-container center-both-axis">
-            <h1>ToKa Fitness Contact Form</h1>
-            <?php
-                if ($success) {
-                    echo "<p class='success'>Thank you for your message, we will get back to you as soon as possible.</p>";
-                } else {
-                    echo '<div class="errors">';
+        <div class="centred-form-container">
+            <div class="basic-form">
+                <h1>ToKa Fitness Contact Form</h1>
+                <?php
+                    if ($success) {
+                        echo "<p class='success'>Thank you for your message, we will get back to you as soon as possible.</p>";
+                    } else {
+                        echo '<div class="errors">';
 
-                    foreach ($errors as $error) {
-                        echo "<p>$error</p>";
+                        foreach ($errors as $error) {
+                            echo "<p>$error</p>";
+                        }
+
+                        echo '</div>';
                     }
+                ?>
 
-                    echo '</div>';
-                }
-            ?>
-
-            <form action="" method="POST">
-                <input type="email" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
-                <input type="text" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>
-                <input type="text" name="last_name" minlength="4" maxlength="30" id="last_name" placeholder="Last Name" required>
-                <textarea type="text" name="message" minlength="50" maxlength="255" id="message" placeholder="Message" required></textarea>
-                <button type="submit" name="submit">Submit</button>
-            </form>
+                <form action="" method="POST">
+                    <input type="email" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
+                    <input type="text" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>
+                    <input type="text" name="last_name" minlength="4" maxlength="30" id="last_name" placeholder="Last Name" required>
+                    <textarea type="text" name="message" minlength="50" maxlength="255" id="message" placeholder="Message" required></textarea>
+                    <button type="submit" name="submit">Submit</button>
+                </form>
+            </div>
         </div>
     </body>
 </html>
