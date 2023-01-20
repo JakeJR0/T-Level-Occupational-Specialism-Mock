@@ -1,7 +1,11 @@
 <?php
 require_once '../storage.php';
 
+
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 
     if (isset($_GET["article"])) {
         $article_id = $_GET["article"];
@@ -9,18 +13,38 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $article_id = trim($article_id);
         $article_id = strip_tags($article_id);
         $article_id = mysqli_real_escape_string($connection, $article_id);
-
         $article_sql = "
-            SELECT title, content, created_on, last_updated, price
+            SELECT users.first_name, users.last_name, articles.title, articles.content, DATE_FORMAT(articles.last_updated, '%d/%m/%Y') AS last_updated, articles.price
             FROM articles
-            WHERE ID = $article_id
+            INNER JOIN users ON articles.creator_id = users.ID
+            WHERE articles.ID = $article_id
         ";
 
         $article = mysqli_query($connection, $article_sql);
         $article = mysqli_fetch_assoc($article);
 
+        $article_price = $article["price"];
+        $article_price = number_format($article_price, 2);
+        $include_purchase_button = false;
+        if ($article_price > 0) {
+            $user = $_SESSION["user"];
+            $user_id = $user["ID"] ?? null;
+            $paid_sql = "
+                SELECT ID
+                FROM purchases
+                WHERE article_id = $article_id AND user_id = {$user_id}
+            ";
+
+            $paid = mysqli_query($connection, $paid_sql);
+
+            if (mysqli_num_rows($paid) == 0) {
+                $article["content"] = "You must pay £{$article_price} to view this article";
+                $include_purchase_button = true;
+            }
+        }
+
         if ($article) {
-            DisplayArticle($article["title"], $article["content"], $article["created_on"], $article["last_updated"], $article["price"]);
+            DisplayArticle($article, $include_purchase_button);
         } else {
             header("Location: /articles.php");
         }
@@ -72,7 +96,7 @@ function DisplayArticleView($articles, $page_number, $total_pages) {
     <body>
     <div class="page-title">
             <h1>Articles</h1>
-            <p>Here you can view content created by our staff members/p>
+            <p>Here you can view content created by our staff members</p>
         </div>
         <div class="list-container">
             <?php
@@ -88,7 +112,7 @@ function DisplayArticleView($articles, $page_number, $total_pages) {
                 $formatted_price = (String) "£" . number_format($article_price, 2);
             ?>
 
-            <a class="list-option" href="?=article=<?= $article_id ?>">
+            <a class="list-option" href="?article=<?= $article_id ?>">
                 <div class="title">
                     <p class="title"><?= $article_title ?></p>
                     <div class="badges">
@@ -129,7 +153,18 @@ function DisplayArticleView($articles, $page_number, $total_pages) {
 
 }
 
-function DisplayArticle($article_title, $article_content, $article_created_on, $article_last_updated) {
+function DisplayArticle($article, $include_purchase_button) {
+    $user_first_name = $article["first_name"];
+    $user_last_name = $article["last_name"];
+    $user_full_name = $user_first_name . " " . $user_last_name;
+
+    $article_title = $article["title"];
+    $article_content = $article["content"];
+    $article_last_updated = $article["last_updated"];
+    $article_price = $article["price"];
+
+    $article_price = floatval($article_price);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -140,13 +175,20 @@ function DisplayArticle($article_title, $article_content, $article_created_on, $
     <body>
         <div class="page-title">
             <h1><?= $article_title ?></h1>
-            <p>Written on <?= $article_created_on ?></p>
-            <p>Last Updated on <?= $article_last_updated ?></p>
+            <p>Written by <?= $user_full_name ?></p>
         </div>
-
-        <div class="article-content">
+        <div class="text-container">
             <?= $article_content ?>
+            <a class='bottom-left btn faced-text' href='articles.php'>Back</a>
+            <p class="faded-text bottom-right">Last Updated on <?= $article_last_updated ?></p>
+            <?php
+                if ($include_purchase_button) {
+                    echo "<a class='bottom-middle btn' href='purchase.php?article={$article_id}'>Purchase Article</a>";
+                }
+            ?>
         </div>
     </body>
 </html>
-<?php } ?>
+<?php
+}
+?>
