@@ -2,8 +2,8 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    require_once 'includes/user.php';
     $email = $_POST["email"];
     $first_name = $_POST["first_name"];
     $last_name = $_POST["last_name"];
@@ -11,15 +11,90 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $membership_type = $_POST["membership_type"];
     $password = $_POST["password"];
     $confirm_password = $_POST["confirm_password"];
+
     $valid = true;
 
+    $first_name = trim($first_name);
+    $last_name = trim($last_name);
+    $email = trim($email);
+    $dob = trim($dob);
+    $membership_type = trim($membership_type);
+    $password = trim($password);
+    $confirm_password = trim($confirm_password);
+
+    $first_name = strip_tags($first_name);
+    $last_name = strip_tags($last_name);
+    $email = strip_tags($email);
+    $dob = strip_tags($dob);
+    $membership_type = strip_tags($membership_type);
+    $password = strip_tags($password);
+    $confirm_password = strip_tags($confirm_password);
+
+    require_once '../storage.php';
+
+    $first_name = mysqli_real_escape_string($connection, $first_name);
+    $last_name = mysqli_real_escape_string($connection, $last_name);
+    $email = mysqli_real_escape_string($connection, $email);
+    $dob = mysqli_real_escape_string($connection, $dob);
+    $membership_type = mysqli_real_escape_string($connection, $membership_type);
+    $password = mysqli_real_escape_string($connection, $password);
+    $confirm_password = mysqli_real_escape_string($connection, $confirm_password);
+
+    if ($password != $confirm_password) {
+        $errors['password'] = "Passwords do not match";
+        $valid = false;
+    }
+
+    if (strlen($password) < 8 || strlen($password) > 50) {
+        $errors['password'] = "Password must be between 8 and 50 characters";
+        $valid = false;
+    }
+
+    if ($first_name == null || $last_name == null || $email == null || $dob == null || $membership_type == null) {
+        $errors['required'] = "All fields are required";
+        $valid = false;
+    }
+    if (strlen($email) < 12 || strlen($email) > 50) {
+        $valid = false;
+        $errors[] = "Email must be between 12 and 50 characters";
+    }
+
+    if (strlen($first_name) < 3 || strlen($first_name) > 20) {
+        $valid = false;
+        $errors[] = "First name must be between 3 and 20 characters";
+    }
+
+    if (strlen($last_name) < 4 || strlen($last_name) > 30) {
+        $valid = false;
+        $errors[] = "Last name must be between 4 and 30 characters";
+    }
+
     if ($valid) {
-        $user = User::create($first_name, $last_name, $email, $membership_type, $dob, $password, $confirm_password);
-        if (is_array($user)) {
-            $errors = $user;
+
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "
+            INSERT INTO users (first_name, last_name, email, dob, membership_type, password)
+            VALUES ('$first_name', '$last_name', '$email', '$dob', '$membership_type', '".$password_hash."');
+        ";
+
+        $result = mysqli_query($connection, $sql);
+
+        if ($result) {
+            $user = array();
+            $user['ID'] = mysqli_insert_id($connection);
+            $user['first_name'] = $first_name;
+            $user['last_name'] = $last_name;
+            $user['email'] = $email;
+            $user['dob'] = $dob;
+            $user['user_type'] = 'user';
+            $user['membership_type'] = $membership_type;
+            $user['created_on'] = date("Y-m-d H:i:s");
+
+            $_SESSION['user'] = $user;
+            $_SESSION["logged_in"] = true;
+            $success = "Successfully created your account with Gym ID: ". $user['ID'];
         } else {
-            $success = "Account created successfully";
-            $_SESSION["user"] = json_encode($user);
+            $errors[] = "Signup failed, please try again later";
         }
     }
 }
@@ -37,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h1>Signup</h1>
                 <p>Please type your details to create an account</p>
                 <?php if (isset($errors)) {
-                    echo "<div class='error'>";
+                    echo "<div class='errors'>";
                         foreach ($errors as $error) {
                             echo "<p>".$error."</p>";
                         }

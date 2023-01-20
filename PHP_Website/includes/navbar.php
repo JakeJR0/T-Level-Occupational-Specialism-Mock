@@ -3,13 +3,12 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once 'includes/user.php';
-
 $navbar_pages = array();
-$client = $_SESSION["user"] ?? null;
-$client = unserialize($client);
 
-if ($client == null || $client->logged_in == false) {
+$client = $_SESSION["user"] ?? null;
+$logged_in = $_SESSION["logged_in"] ?? false;
+
+if (!$logged_in) {
     $navbar_pages[] = array('name' => 'Home', 'url' => 'index.php');
     $navbar_pages[] = array('name' => 'Articles', 'url' => 'articles.php');
     $navbar_pages[] = array('name' => 'Login', 'url' => 'login.php');
