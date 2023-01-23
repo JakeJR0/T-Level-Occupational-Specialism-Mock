@@ -1,5 +1,21 @@
 const socket = io('http://172.22.19.76:5000');
 
+function getSecurityAuth() {
+    var cookie = document.cookie;
+    // Gets the security part of the cookie
+    var security = cookie.split(";")
+    var token = "";
+    for (var i = 0; i < security.length; i++) {
+        if (security[i].startsWith(" security=")) {
+            token = security[i];
+            break;
+        }
+    }
+
+    token = token.split("=")[1].trim();
+    return token;
+}
+
 function addMessageToChat(chat, username, message) {
     var messageContainer = chat.querySelector(".chat-message-container");
     var messageElement = document.createElement("div");
@@ -21,7 +37,7 @@ function addMessageToChat(chat, username, message) {
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
-function sendMessage(chat, username="", message="") {
+function sendMessage(chat, message="") {
     valid = true;
 
     if (message.length <= 0) {
@@ -30,23 +46,28 @@ function sendMessage(chat, username="", message="") {
         valid = false;
     }
 
-    if (valid == true) {
-        console.log("username: " + username + " message: " + message);
-        socket.emit('message', {username: username, message: message});
-        addMessageToChat(chat, username, message);
-
-        return true;
-    } else {
+    if (valid != true) {
         return false;
     }
+
+
+    var token = getSecurityAuth();
+
+    // Sends message via socket
+    socket.emit('message', {
+        'message': message,
+        'token': token
+    });
+
 }
 
-function setUpChatBox() {
-    var chat = document.getElementById('chat');
+function setupChatBox(chat) {
     setup = true;
     if (chat) {
         var chatIcon = document.querySelector('.chat-icon');
         var chatWindow = document.querySelector('.chat-container');
+        var messageContainer = chat.querySelector(".chat-message-container");
+        messageContainer.scrollTop = messageContainer.scrollHeight;
 
         chatIcon.addEventListener('click', function() {
             // If open, close
@@ -60,8 +81,6 @@ function setUpChatBox() {
 
                 chat.classList.add('open');
             }
-
-            console.log('Clicked!');
         });
 
         const ChatInput = document.querySelector('.chat-input input');
@@ -90,7 +109,7 @@ function setUpChatBox() {
 
                 var message = ChatInput.value;
                 ChatInput.value = '';
-                sendMessage(chat, "example", message);
+                sendMessage(chat, message);
             }
         });
 
@@ -102,20 +121,50 @@ function setUpChatBox() {
     return setup;
 }
 
+function setupChat() {
+    var chat = document.getElementById('chat');
 
+    if (!chat) {
+        console.log("Chat HTML was not found, disabling chat...");
+        return false;
+    }
 
-document.addEventListener("DOMContentLoaded", function(event) {
-    setup = setUpChatBox();
+    var chatID = chat.getAttribute('data-chat-id');
+    if (!chatID || chatID == null) {
+        socket.emit('create_chat', {
+            'token': getSecurityAuth()
+        });
+
+        console.log(socket.emit());
+
+        console.log("Chat ID was not found, creating new chat...")
+    } else {
+        console.log("Chat ID found, connecting to chat...");
+    }
+
+    setup = setupChatBox(chat);
     console.log(setup);
     if (setup) {
-        socket.on('connect', function() {
-            console.log('Connected!');
-        });
-    }
-});
+        socket.on("connect", function() {
+            console.log(socket);
+            socket.on("join", function(data) {
+                console.log("Joined chat");
+                console.log(data);
+            })
 
-socket.on('message', function(data) {
-    console.log(data);
-    var chat = document.getElementById('chat');
-    addMessageToChat(chat, data.username, data.message);
+
+            socket.emit('join_chat', {
+                'token': getSecurityAuth()
+            });
+
+            socket.on("message", function(data) {
+                console.log("Client ID: " + socket.id);
+                console.log(data);
+            })
+        })
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    setupChat();
 });
