@@ -35,7 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 user.user_type,
                 user.dob,
                 password,
-                user.membership_type
+                user.membership_type,
+                user.private_key
             FROM users AS user
             WHERE ID = '$gym_id'
         ";
@@ -55,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user['membership_type'] = $row['membership_type'];
             $_SESSION['user'] = $user;
             $_SESSION["logged_in"] = true;
+            $_SESSION["private_key"] = $row['private_key'];
             $success = "Login successful";
         } else {
             $errors[] = "Invalid ID or password";

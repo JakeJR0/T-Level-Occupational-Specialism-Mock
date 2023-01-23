@@ -72,9 +72,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($valid) {
 
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $private_key = bin2hex(random_bytes(256));
+        // Ensures that the private key is unique
+
+        $private_key_sql = "
+            SELECT private_key
+            FROM users
+            WHERE private_key = '$private_key';
+        ";
+
+        $private_key_result = mysqli_query($connection, $private_key_sql);
+
+        while (mysqli_num_rows($private_key_result) > 0) {
+            $private_key = bin2hex(random_bytes(256));
+            $private_key_sql = "
+                SELECT private_key
+                FROM users
+                WHERE private_key = $private_key;
+            ";
+            $private_key_result = mysqli_query($connection, $private_key_sql);
+        }
+
         $sql = "
-            INSERT INTO users (first_name, last_name, email, dob, membership_type, password)
-            VALUES ('$first_name', '$last_name', '$email', '$dob', '$membership_type', '".$password_hash."');
+            INSERT INTO users (first_name, last_name, email, dob, membership_type, password, private_key)
+            VALUES ('$first_name', '$last_name', '$email', '$dob', '$membership_type', '".$password_hash."', '$private_key');
         ";
 
         $result = mysqli_query($connection, $sql);
@@ -88,6 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user['dob'] = $dob;
             $user['user_type'] = 'user';
             $user['membership_type'] = $membership_type;
+            $user['private_key'] = $private_key;
             $user['created_on'] = date("Y-m-d H:i:s");
 
             $_SESSION['user'] = $user;
