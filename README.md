@@ -36,18 +36,19 @@ ToKa Fitness currently provides customers with:
 
 ## Features
 
-- [ ] Login
-- [ ] Sign Up
+- [X] Login
+- [X] Sign Up
 - [ ] Forum
-- [ ] Free Content
+- [X] Free Content
 - [ ] Paid Content
 - [ ] Chat
 - [X] Contact Form
+- [X] About Page
 
 ## User Requirements
 
-- [ ] User can Login and Register
-- [ ] User can view free content
+- [X] User can Login and Register
+- [X] User can view free content
 - [ ] User can purchase additional content on the site
 - [ ] User can post and read forum posts
 - [ ] Users can delete and modify their own posts
