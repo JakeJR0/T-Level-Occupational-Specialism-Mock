@@ -50,13 +50,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = mysqli_fetch_assoc($login_result);
         $stored_password = $row['password'] ?? "";
         if (password_verify($password, $stored_password)) {
+            $user['ID'] = $row['ID'];
             $user['first_name'] = $row['first_name'];
             $user['user_type'] = $row['user_type'];
             $user['dob'] = $row['dob'];
             $user['membership_type'] = $row['membership_type'];
+            $user["private_key"] = $row['private_key'];
             $_SESSION['user'] = $user;
             $_SESSION["logged_in"] = true;
-            $_SESSION["private_key"] = $row['private_key'];
+
+
             $success = "Login successful";
         } else {
             $errors[] = "Invalid ID or password";
