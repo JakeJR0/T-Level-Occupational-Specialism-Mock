@@ -40,6 +40,10 @@ body {
         margin-top: 0;
         margin-bottom: 5rem;
         padding: 0;
+
+        &.description {
+            margin-top: 24px;
+        }
     }
 }
 
