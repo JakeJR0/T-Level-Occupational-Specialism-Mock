@@ -1,3 +1,14 @@
+"""
+This is the main file for the chat API.
+
+Currently this file is used to allow users to send messages to the chat server
+and for admins to view and respond to the messages in real time.
+
+The Chat API is built using Flask and SocketIO and connects to the MySQL database,
+this is to allow the chat to be persistent and it allows the past messages to be
+viewed by the database admins (Allowing staff to view past chats could be a future feature).
+
+"""
 from flask import Flask, request
 from flask_socketio import SocketIO
 from flask_socketio import join_room, leave_room, send
@@ -6,7 +17,7 @@ import gevent
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+app.config["SECRET_KEY"] = "secret!"
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = ""
@@ -16,18 +27,15 @@ app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 # Middleware
 
 mysql = MySQL(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
-
-# TODO: Fix message sending
-# TODO: Allow users to join rooms
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
 
 
 def security_to_user(security_key: int) -> int:
     """
-        This function takes in the private key from
-        the front end and converts it into a user ID,
-        this is to ensure that the user is sending the
-        requests to the api.
+    This function takes in the private key from
+    the front end and converts it into a user ID,
+    this is to ensure that the user is sending the
+    requests to the api.
     """
 
     cursor = mysql.connection.cursor()
@@ -36,35 +44,97 @@ def security_to_user(security_key: int) -> int:
 
     return user_id
 
-def get_current_chat_id(user_id: int) -> int:
+
+def user_id_to_first_name(user_id: int) -> str:
     """
-        This function gets the current chat ID
-        for the user.
+    This function takes in a user ID and returns
+    the users first name.
     """
 
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT ID FROM support_chat WHERE user_id = %s ORDER BY ID DESC", (user_id,))
+    cursor.execute("SELECT first_name FROM users WHERE ID = %s", (user_id,))
+    first_name = cursor.fetchone()["first_name"]
+
+    return first_name
+
+
+def user_is_staff(user_id: int) -> bool:
+    """
+    This function checks if the user is a staff member.
+    """
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT user_type FROM users WHERE ID = %s", (user_id,))
+
+    user_type = cursor.fetchone()["user_type"]
+
+    is_staff = False
+
+    if user_type == "staff":
+        is_staff = True
+    elif user_type == "admin":
+        is_staff = True
+
+    return is_staff
+
+
+def get_current_chat_id(user_id: int) -> int:
+    """
+    This function gets the current chat ID
+    for the user.
+    """
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(
+        "SELECT ID FROM support_chat WHERE user_id = %s ORDER BY ID DESC", (user_id,)
+    )
     chat_id = cursor.fetchone()["ID"]
 
     return chat_id
 
+
 def add_message_to_chat(chat_id: int, user_id: int, message: str) -> None:
     """
-        This function saves a message to the database.
+    This function saves a message to the database.
     """
 
     cursor = mysql.connection.cursor()
-    cursor.execute("INSERT INTO support_chat_messages(chat_id, user_id, message) VALUES(%s, %s, %s)", (chat_id, user_id, message))
+    cursor.execute(
+        "INSERT INTO support_chat_messages(chat_id, user_id, message) VALUES(%s, %s, %s)",
+        (chat_id, user_id, message),
+    )
     # Commits changes
     mysql.connection.commit()
 
 
 # SocketIO events
 
+
 @socketio.on("connect")
 def handle_connect():
     print("Client connected, Client ID: ", request.sid)
-    send({"message": "You have connected to the server", "client_id": request.sid})
+    send(
+        {
+            "message": "You have connected to the chat server",
+            "client_id": request.sid,
+            "user_id": 0,
+            "username": "Server",
+        }
+    )
+
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    print("Client disconnected, Client ID: ", request.sid)
+    send(
+        {
+            "message": "You have disconnected from the chat server",
+            "client_id": request.sid,
+            "user_id": 0,
+            "username": "Server",
+        }
+    )
+
 
 @socketio.on("message")
 def handle_message(data):
@@ -78,14 +148,61 @@ def handle_message(data):
 
     # Gets the user ID
     user_id = security_to_user(security_key)
-    # Gets the chat ID
-    chat_id = get_current_chat_id(user_id)
 
+    if user_is_staff(user_id):
+        chat_id: int = data["chat_id"]
+    else:
+        # Gets the chat ID
+        chat_id = get_current_chat_id(user_id)
+
+    print("Chat ID: R ", chat_id)
     add_message_to_chat(chat_id, user_id, message)
 
-    # Sends message to every user in room
+    # Gets the users first name
+    first_name = user_id_to_first_name(user_id)
 
-    socketio.emit("message", {"message": message}, room=str(chat_id))
+    # Sends message to every user in room
+    socketio.emit(
+        "message",
+        {
+            "message": message,
+            "user_id": user_id,
+            "username": first_name,
+            "chat_id": chat_id,
+            "type": "chat_message",
+        },
+        room=str(chat_id),
+        include_self=True,
+    )
+
+
+@socketio.on("get_chat_messages")
+def handle_get_chat_history(data):
+    user_token = data["token"]
+    chat_id = data["chat_id"]
+    user_id = security_to_user(user_token)
+    staff = user_is_staff(user_id)
+
+    if staff:
+        cursor = mysql.connection.cursor()
+        chat_sql = """
+            SELECT users.first_name, support_chat_messages.message
+            FROM support_chat_messages
+            INNER JOIN users ON support_chat_messages.user_id = users.ID
+            WHERE chat_id = %s
+            ORDER BY support_chat_messages.ID ASC
+        """
+
+        cursor.execute(
+            chat_sql,
+            (chat_id,),
+        )
+        messages = cursor.fetchall()
+        socketio.emit(
+            "message",
+            {"message": messages, "type": "chat_history", "chat_id": chat_id},
+        )
+
 
 @socketio.on("create_chat")
 def handle_create_chat(data):
@@ -100,66 +217,157 @@ def handle_create_chat(data):
     chat_id = cursor.lastrowid
     # Commits the changes
     mysql.connection.commit()
-
     print("user ID: ", user_id)
     print("chat ID: ", chat_id)
-    #the user with the given session ID. If this parameter is not included
+    # the user with the given session ID. If this parameter is not included
     print("Session ID: ", request.sid)
     # Send message to the user
-    socketio.emit("message", {"message": "Chat created", "chat_id": chat_id}, room=request.sid)
+    socketio.emit(
+        "message", {"message": "Chat created", "chat_id": chat_id}, room=request.sid
+    )
+
+    # Adds the user to the room
+    join_room(str(chat_id))
+
+    # Sends a message to the staff
+    socketio.emit(
+        "message",
+        {
+            "message": "New chat created",
+            "type": "new_chat",
+            "chat_id": chat_id,
+            "user_id": user_id,
+        },
+        room="staff",
+    )
+
+
+@socketio.on("join_staff")
+def handle_join_staff(data):
+    token = data["token"]
+    user_id = security_to_user(token)
+
+    # Checks if the user is staff
+    valid = user_is_staff(user_id)
+
+    if valid:
+        join_room("staff")
+        socketio.emit(
+            "message",
+            {"message": "You have joined the staff room", "user_id": user_id},
+            room=request.sid,
+        )
+
+
+@socketio.on("request_chats")
+def handle_request_chats(data):
+    token = data["token"]
+    user_id = security_to_user(token)
+
+    # Checks if the user is staff
+    valid = user_is_staff(user_id)
+
+    if valid:
+        cursor = mysql.connection.cursor()
+        chats_sql = """
+            SELECT support_chat.ID, users.first_name AS username, support_chat.user_id, support_chat.status
+            FROM support_chat 
+            INNER JOIN users ON support_chat.user_id = users.ID
+            WHERE status = 'open' 
+            ORDER BY ID DESC
+        """
+        cursor.execute(chats_sql)
+
+        chats = cursor.fetchall()
+
+        socketio.emit(
+            "message",
+            {"message": "Chats found", "type": "chats", "chats": chats},
+            room=request.sid,
+        )
+
 
 @socketio.on("join_chat")
 def handle_join_chat(data):
     user_token = data["token"]
     user_id = security_to_user(user_token)
 
-    # Gets the chat ID
-    cursor = mysql.connection.cursor()
-    chat_sql = """
-        SELECT ID, status
-        FROM support_chat
-        WHERE user_id = %s
-        ORDER BY ID DESC
-    """
+    staff = user_is_staff(user_id)
 
-    cursor.execute(chat_sql, (user_id,))
-    found = False
-    chat_id: int = 0
+    if not staff:
+        # Gets the chat ID
+        cursor = mysql.connection.cursor()
+        chat_sql = """
+            SELECT ID, status
+            FROM support_chat
+            WHERE user_id = %s
+            ORDER BY ID DESC
+        """
 
-    while not found:
-        if cursor.rowcount == 0:
-            break
+        cursor.execute(chat_sql, (user_id,))
+        found = False
+        chat_id: int = 0
 
-        result = cursor.fetchone()
-        chat_id = result["ID"]
-        status = result["status"]
-        if status == "open":
-            found = True
+        while not found:
+            if cursor.rowcount == 0:
+                break
 
-    if found:
-        join_room(str(chat_id))
-        print("Joined room: ", str(chat_id))
-        socketio.emit("join", {"message": "You have joined the chat", "chat_id": chat_id})
-        # Q: How do I use sid to send a message to the user?
+            result = cursor.fetchone()
+            chat_id = result["ID"]
+            status = result["status"]
+            if status == "open":
+                found = True
 
+        if found:
+            join_room(str(chat_id))
+            print("Joined room: ", str(chat_id))
+            socketio.emit(
+                "join", {"message": "You have joined the chat", "chat_id": chat_id}
+            )
+            # Q: How do I use sid to send a message to the user?
+
+        else:
+            socketio.emit("join", {"message": "No chat found"})
     else:
-        socketio.emit("join", {"message": "No chat found"})
+        chat_id = data["chat_id"]
+        username = user_id_to_first_name(user_id)
+        join_room(str(chat_id))
+        # Sends a message that the staff has joined the chat
+        socketio.emit(
+            "message",
+            {
+                "message": f"Staff Member {username} has joined the chat",
+                "type": "message",
+            },
+            room=str(chat_id),
+        )
+
 
 @socketio.on("leave_chat")
 def handle_leave_chat(data):
     chat = data["chat_id"]
     leave_room(str(chat), sid=request.sid)
 
+
 @socketio.on("close_chat")
 def handle_close_chat(data):
     chat_id = data["chat_id"]
 
     cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE support_chat SET status = 'closed' WHERE ID = %s", (chat_id,))
+    cursor.execute(
+        "UPDATE support_chat SET status = 'closed' WHERE ID = %s", (chat_id,)
+    )
     mysql.connection.commit()
 
     socketio.emit("message", {"message": "Chat closed"}, room=str(chat_id))
+    # Sends a message to the staff
+    socketio.emit(
+        "message",
+        {"message": "Chat closed", "type": "close_chat", "chat_id": chat_id},
+        room="staff",
+    )
+
 
 if __name__ == "__main__":
     print("Starting server")
-    app.run(host="0.0.0.0")
+    socketio.run(app=app, host="0.0.0.0")
