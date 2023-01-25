@@ -583,6 +583,48 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
 }
+.chat .chat-container .chat-message-container button {
+  width: 100%;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.chat .chat-container .chat-message-container button .chat-title {
+  font-size: 1rem;
+  color: black;
+  font-weight: normal;
+}
+.chat .chat-container .chat-message-container button .chat-title::after {
+  content: ":";
+  display: inline-block;
+  color: black;
+}
+.chat .chat-container .chat-message-container button .chat-title::before {
+  content: "#";
+  display: inline-block;
+  color: black;
+}
+.chat .chat-container .chat-message-container button .chat-username {
+  font-size: 0.8rem;
+}
+.chat .chat-container .chat-message-container button .chat-status {
+  font-size: 0.8rem;
+}
+.chat .chat-container .chat-message-container button .chat-status::before {
+  content: "(";
+  display: inline-block;
+  color: black;
+}
+.chat .chat-container .chat-message-container button .chat-status::after {
+  content: ")";
+  display: inline-block;
+  color: black;
+}
 .chat .chat-container .chat-message-container .chat-message {
   display: flex;
   width: 100%;
@@ -604,11 +646,41 @@ body {
   margin-top: 0;
   margin-bottom: 0;
 }
-.chat .chat-container .chat-title {
+.chat .chat-container .chat-title:is(p) {
   text-align: center;
   font-size: 1.2rem;
   font-weight: bold;
   color: white;
+}
+.chat .chat-container .chat-title:is(div) {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+.chat .chat-container .chat-title:is(div) p {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+}
+.chat .chat-container .chat-title:is(div) .chat-close {
+  width: 50px;
+  height: 100%;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  flex-direction: column;
+  align-self: flex-start;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transform: rotate(180deg);
 }
 .chat .chat-container .chat-input {
   position: absolute;
@@ -709,4 +781,4 @@ body {
   100% {
     opacity: 0;
   }
-}
+}/*# sourceMappingURL=main.css.map */
