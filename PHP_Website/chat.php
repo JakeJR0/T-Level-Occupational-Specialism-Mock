@@ -18,23 +18,32 @@ if (session_status() == PHP_SESSION_NONE) {
 <body>
     <?php
 
-
     $logged_in = $_SESSION["logged_in"] ?? false;
     $user = $_SESSION["user"] ?? null;
 
     if ($logged_in == true) {
         // Checks if the security cookie is set
+        $created_cookie = false;
         if (isset($_COOKIE["security"])) {
             // Checks if the cookie is valid
             if ($_COOKIE["security"] != $user["private_key"]) {
                 // If the cookie is invalid, the user is logged out for security purposes
+
                 session_destroy();
                 header("Location: login.php");
                 exit("You have been logged out for security reasons. Please login and try again.");
             }
         } else {
-            // Creates a new security cookie that lasts an hour
-            setcookie("security", $user["private_key"], time() + 3600, "/");
+            // If the cookie is not set, it is created
+            // Create cookie
+
+            $cookie_name = "security";
+            $cookie_value = $user["private_key"];
+            // Cookie expires in 1 day
+            $cookie_expiration = time() + (86400 * 1);
+            setcookie($cookie_name, $cookie_value, $cookie_expiration, "/");
+            
+            $created_cookie = true;
         }
 
         $account_type = $user["user_type"];
@@ -52,6 +61,18 @@ if (session_status() == PHP_SESSION_NONE) {
                 echo "<div class='page-title'><h1>Error: Invalid account type</h1></div>";
                 break;
         }
+
+        if ($created_cookie) {
+            $cookie_security = $user["private_key"];
+        } else {
+            $cookie_security = $_COOKIE["security"];
+        }
+
+        echo "<script>
+        function getSecurityAuth() {
+            return '" . $cookie_security . "';
+        }
+        </script>";
     }
     ?>
 </body>
@@ -64,6 +85,7 @@ if (session_status() == PHP_SESSION_NONE) {
             <div class="chat-title">
                 <button class="chat-close" onclick="exitChat()">⟶</button>
                 <p>Available Chats</p>
+                <button class="chat-exit" onclick="closeChat()">X</button>
             </div>
             <div class="chat-message-container">
                 <button>
@@ -137,10 +159,15 @@ function DisplayUserChat($user)
 
     <div id="chat" class="chat" data-chat-id="<?= $chat_id ?>">
         <div class="chat-container">
-            <p class="chat-title">
-                Chat
-            </p>
+            <div class="chat-title">
+                <button class="chat-close">
+                    <!-- This is a placeholder (This centers the chat) -->
+                </button>
+                <p>Available Chats</p>
+                <button class="chat-exit" onclick="closeChat()">X</button>
+            </div>
             <div class="chat-message-container">
+                <!-- This container holds all of the chat -->
                 <?php
                 // Loops through all the messages in the chat
                 // and displays them

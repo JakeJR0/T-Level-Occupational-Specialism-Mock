@@ -22,6 +22,67 @@ function sendMessage(chat, message="") {
 
 }
 
+
+function handleChatClosing() {
+    var chat = document.getElementById('chat');
+    if (!chat) {
+        return false;
+    }
+
+    var chatInput = chat.querySelector('.chat-input');
+
+    // Makes input box visible
+    chatInput.style.display = "none";
+
+    // Gets chat ID
+    var chatID = chat.getAttribute('data-chat-id');
+
+    // Leaves chat
+    var token = getSecurityAuth();
+    socket.emit('leave_chat', {
+        'token': token,
+        'chat_id': chatID
+    });
+
+    // Sets chat ID
+    chat.setAttribute('data-chat-id', null);
+}
+
+function chatOpenEvent() {
+    var chat = document.getElementById('chat');
+
+    if (!chat) {
+        return false;
+    }
+
+    var chatID = chat.getAttribute('data-chat-id');
+
+    if (chatID == null || chatID == "null" || chatID == "" || chatID == "undefined") {
+        // Removes all chat messages
+
+        deleteChats();
+
+        // Creates a new chat
+
+        var token = getSecurityAuth();
+        socket.emit('create_chat', {
+            'token': token
+        });
+
+    }
+
+}
+
+function closeChat() {
+    var token = getSecurityAuth();
+    socket.emit('close_chat', {
+        'token': token,
+        'chat_id': chat.getAttribute('data-chat-id')
+    });
+
+    handleChatClosing();
+}
+
 function setupChat() {
     var chat = document.getElementById('chat');
 
@@ -30,25 +91,10 @@ function setupChat() {
         return false;
     }
 
-    var chatID = chat.getAttribute('data-chat-id');
-    if (!chatID || chatID == null) {
-        socket.emit('create_chat', {
-            'token': getSecurityAuth()
-        });
-
-        console.log(socket.emit());
-
-        console.log("Chat ID was not found, creating new chat...")
-    } else {
-        console.log("Chat ID found, connecting to chat...");
-    }
-
     if (setup) {
         socket.on("connect", function() {
-            console.log(socket);
             socket.on("join", function(data) {
                 console.log("Joined chat");
-                console.log(data);
             })
 
 
@@ -57,11 +103,23 @@ function setupChat() {
             });
 
             socket.on("message", function(data) {
-                console.log("Client ID: " + socket.id);
-                console.log(data);
-                
+                try {
+                    if (data["type"] == "chat_history") {
+                        return;
+                    } else if (data["type"] == "close_chat") {
+                        handleChatClosing();
+                    } else if (data["type"] == "created_chat") {
+                        chat.setAttribute('data-chat-id', data["chat_id"]);
+
+                        var chatInput = chat.querySelector('.chat-input');
+                        chatInput.style.display = "flex";
+                    } else if (data["type"] == "server_message") {
+                        console.log("Server message: " + data["message"]);
+                        return;
+                    }
+                } catch (e) {}
+
                 addMessageToChat(chat, data['username'], data['message']);
-                console.log("Received message from Chat API, from " + data['username'] + ":" + data['message']);
             })
         })
     }
@@ -69,4 +127,5 @@ function setupChat() {
 
 document.addEventListener("DOMContentLoaded", function(event) {
     setupChat();
+    events.chat_open = chatOpenEvent;
 });

@@ -1,19 +1,21 @@
-const socket = io('http://172.22.19.76:5000');
+const socket = io('http://172.22.18.4:5000');
 
-function getSecurityAuth() {
-    var cookie = document.cookie;
-    // Gets the security part of the cookie
-    var security = cookie.split(";")
-    var token = "";
-    for (var i = 0; i < security.length; i++) {
-        if (security[i].startsWith(" security=")) {
-            token = security[i];
-            break;
-        }
+var events = {
+    "chat_open": null,
+    "chat_close": null,
+    "force_close": closeChatElement
+}
+
+function closeChatElement() {
+    var chat = document.getElementById('chat');
+    if (!chat) {
+        return false;
     }
 
-    token = token.split("=")[1].trim();
-    return token;
+    if (chat.classList.contains("open")) {
+        chat.classList.remove("open");
+        chat.classList.add("closed");
+    }
 }
 
 function addMessageToChat(chat, username, message) {
@@ -37,7 +39,27 @@ function addMessageToChat(chat, username, message) {
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
+function deleteChats() {
+    var chat = document.getElementById('chat');
+    if (!chat) {
+        return false;
+    }
 
+    var chatContainer = chat.querySelector('.chat-container');
+    var chatMessageContainer = chat.querySelector('.chat-message-container');
+
+    var chatElements = chatMessageContainer.querySelectorAll('button');
+    for (var i = 0; i < chatElements.length; i++) {
+        var chatElement = chatElements[i];
+        chatMessageContainer.removeChild(chatElement);
+    }
+
+    var chatMessages = chatContainer.querySelectorAll('.chat-message');
+    for (var i = 0; i < chatMessages.length; i++) {
+        var chatMessage = chatMessages[i];
+        chatMessageContainer.removeChild(chatMessage);
+    }
+}
 
 function setupChatBox() {
     var chat = document.getElementById('chat');
@@ -53,12 +75,22 @@ function setupChatBox() {
             if (chat.classList.contains('open')) {
                 chat.classList.remove('open');
                 chat.classList.add('closed');
+
+                if (events["chat_close"] != null) {
+                    events["chat_close"]();
+                }
+
             } else {
                 try {
                     chat.classList.remove('closed');
                 } catch (e) {};
 
                 chat.classList.add('open');
+
+                if (events["chat_open"] != null) {
+                    events["chat_open"]();
+                }
+
             }
         });
 
