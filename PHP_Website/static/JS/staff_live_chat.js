@@ -25,7 +25,7 @@ function sendMessage(chat, message="") {
 
 function DisplayChatRoom(chatID) {
     deleteChats();
-    
+
     var chat = document.getElementById('chat');
     if (!chat) {
         return false;
@@ -49,7 +49,7 @@ function DisplayChatRoom(chatID) {
 
 function AddAvailableChat(chat_id, chat_username) {
     var chat = document.getElementById('chat');
-    
+
     if (!chat) {
         return false;
     }
@@ -146,13 +146,10 @@ function loadAvailableChats() {
 function joinStaffRoom() {
     var token = getSecurityAuth();
 
-    socket.emit('join_staff_room', {
+    socket.emit('join_staff', {
         'token': token
     });
 
-    socket.on('staff_room_joined', function(data) {
-        console.log("Listening to staff room");
-    });
 }
 
 function requestChats() {
@@ -161,28 +158,6 @@ function requestChats() {
     socket.emit('request_chats', {
         'token': token
     });
-}
-
-function deleteChats() {
-    var chat = document.getElementById('chat');
-    if (!chat) {
-        return false;
-    }
-
-    var chatContainer = chat.querySelector('.chat-container');
-    var chatMessageContainer = chat.querySelector('.chat-message-container');
-
-    var chatElements = chatMessageContainer.querySelectorAll('button');
-    for (var i = 0; i < chatElements.length; i++) {
-        var chatElement = chatElements[i];
-        chatMessageContainer.removeChild(chatElement);
-    }
-
-    var chatMessages = chatContainer.querySelectorAll('.chat-message');
-    for (var i = 0; i < chatMessages.length; i++) {
-        var chatMessage = chatMessages[i];
-        chatMessageContainer.removeChild(chatMessage);
-    }
 }
 
 function addChats(chats) {
@@ -207,14 +182,50 @@ function exitChat() {
     var chatMessageContainer = chat.querySelector('.chat-message-container');
     var chatInput = chat.querySelector('.chat-input');
     var chatBack = chat.querySelector('.chat-close');
+    var chatClose = chat.querySelector('.chat-exit');
 
     chatInput.style.display = "none";
     chatBack.style.display = "none";
+    chatClose.style.display = "none";
+
+    // Gets chat ID
+    var chat_id = chat.getAttribute('data-chat-id');
+
+    // Removes chat ID
+    chat.setAttribute('data-chat-id', null);
+
+    // Leaves chat room
+    var token = getSecurityAuth();
+    socket.emit('leave_chat', {
+        'chat_id': chat_id,
+        'token': token
+    });
 
     deleteChats();
     requestChats();
 }
 
+function closeChat() {
+    var chat = document.getElementById('chat');
+
+    if (!chat) {
+        return false;
+    }
+
+    var chat_id = chat.getAttribute('data-chat-id');
+
+    if (chat_id == null) {
+        console.warn("Chat ID is null");
+        return false;
+    }
+
+    socket.emit('close_chat', {
+        'chat_id': chat.getAttribute('data-chat-id'),
+        'token': getSecurityAuth()
+    });
+
+    exitChat();
+}
 
 function Chat() {
     socket.on("message", function(data) {
@@ -247,13 +258,15 @@ function Chat() {
             var chat = document.getElementById('chat');
             var chatInput = chat.querySelector('.chat-input');
             var chatBack = chat.querySelector('.chat-close');
+            var chatExit = chat.querySelector('.chat-exit');
 
             chatInput.style.display = "none";
             chatBack.style.display = "none";
+            chatExit.style.display = "none";
 
             deleteChats();
             // Add all chats
-            
+
             var chats = data["chats"] || null;
 
             if (chats != null) {
@@ -276,11 +289,16 @@ function Chat() {
                     addMessageToChat(chat, username, message);
                 }
             }
-            
+
             var chatInput = chat.querySelector('.chat-input');
             var chatBack = chat.querySelector('.chat-close');
+            var chatExit = chat.querySelector('.chat-exit');
             chatInput.style.display = "flex";
             chatBack.style.display = "flex";
+            chatExit.style.display = "flex";
+
+            var Chat = document.getElementById('chat');
+            Chat.scrollTop = Chat.scrollHeight;
 
         } else if (type == "chat_message") {
             var chat = document.getElementById('chat');
@@ -298,6 +316,8 @@ function Chat() {
             if (username != null && message != null) {
                 addMessageToChat(chat, username, message);
             }
+        } else if (type == "server_message") {
+            console.log("Server Message: " + message);
         }
     });
 
