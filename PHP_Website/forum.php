@@ -7,15 +7,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         session_start();
     }
 
-    if (isset($_GET["article"])) {
+    if (isset($_GET["forum"])) {
         $forum_id = $_GET["forum"];
 
         $forum_id = trim($forum_id);
         $forum_id = strip_tags($forum_id);
         $forum_id = mysqli_real_escape_string($connection, $forum_id);
         $forum_sql = "
-            SELECT users.first_name, users.last_name, forums.title, forums.content, DATE_FORMAT(forums.last_updated, '%d/%m/%Y') AS last_updated, forums.price
-            FROM forums
+            SELECT forums.ID, users.first_name, users.last_name, forums.title, DATE_FORMAT(forums.last_updated, '%d/%m/%Y') AS last_updated, forums.price
+            FROM forum_threads AS forums
             INNER JOIN users ON forums.creator_id = users.ID
             WHERE forums.ID = $forum_id
         ";
@@ -44,7 +44,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         }
 
         if ($forum) {
-            DisplayForum($forum, $include_purchase_button);
+            $forum_id = $forum["ID"];
+            $content = null;
+            if (!$include_purchase_button) {
+                $content_sql = "
+                SELECT forum.ID, users.first_name, forum.creator_id, forum.replying_to, forum.message, DATE_FORMAT(forum.sent_on, '%d/%m/%Y') AS sent_on
+                FROM forum_messages AS forum
+                INNER JOIN users ON users.ID = forum.creator_id
+                WHERE forum.thread_id = {$forum_id}
+            ";
+
+                $content = mysqli_query($connection, $content_sql);
+            }
+
+            DisplayForum($forum, $content, $include_purchase_button);
+
+
         } else {
             header("Location: /forums.php");
         }
@@ -153,13 +168,15 @@ function DisplayForumView($forums, $page_number, $total_pages) {
 
 }
 
-function DisplayForum($forum, $include_purchase_button) {
+function DisplayForum($forum, $content, $include_purchase_button) {
     $user_first_name = $forum["first_name"];
     $user_last_name = $forum["last_name"];
     $user_full_name = $user_first_name . " " . $user_last_name;
 
     $forum_title = $forum["title"];
-    $forum_content = $forum["content"];
+
+    // Get the forum content
+
     $forum_last_updated = $forum["last_updated"];
     $forum_price = $forum["price"];
 
@@ -178,7 +195,33 @@ function DisplayForum($forum, $include_purchase_button) {
             <p>Written by <?= $user_full_name ?></p>
         </div>
         <div class="text-container">
-            <?= $forum_content ?>
+            <?php
+                if (!$include_purchase_button) {
+
+                    for ($i = 0; $i < mysqli_num_rows($content); $i++) {
+                        $message = mysqli_fetch_assoc($content);
+                        $message_id = $message["ID"];
+                        $message_creator_id = $message["creator_id"];
+                        $message_reply_to = $message["reply_to"];
+                        $message_content = $message["content"];
+                        $message_sent_on = $message["sent_on"];
+
+                        $message_creator_first_name = $message["first_name"];
+
+                        if ($message_reply_to == NULL) {
+                            echo "<div class='message'>";
+                            echo "<p class='message-content'>$message_content</p>";
+                            echo "<p class='message-sent-on'>Sent on $message_sent_on</p>";
+                            echo "</div>";
+                        } else {
+                            echo "<div class='message reply'>";
+                            echo "<p class='message-content'>$message_content</p>";
+                            echo "<p class='message-sent-on'>Sent on $message_sent_on</p>";
+                            echo "</div>";
+                        }
+                    }
+                }
+            ?>
             <a class='bottom-left btn faced-text' href='forums.php'>Back</a>
             <p class="faded-text bottom-right">Last Updated on <?= $forum_last_updated ?></p>
             <?php
