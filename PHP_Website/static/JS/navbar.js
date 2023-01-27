@@ -17,16 +17,13 @@ function AddNavbarListeners() {
     var navbar = document.getElementsByClassName("navbar");
 
     if (navbar.length > 0) {
-        console.log("Found the navigation bar")
         var nav = navbar[0]
         var button = nav.querySelector(".toggle-button")
 
         if (button != null) {
-            console.log("Adding listener to button")
             button.addEventListener("click", function() {
                 ToggleNavbar(nav)
             });
-            console.log("Added listener to button")
         }
     }
 }
