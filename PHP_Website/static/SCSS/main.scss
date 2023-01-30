@@ -47,6 +47,20 @@ body {
     }
 }
 
+@media screen and (max-height: 800px) {
+
+    .page-title {
+        h1 {
+            font-size: 2rem;
+        }
+
+        p {
+            font-size: 0.8rem;
+        }
+    }
+    
+}
+
 @import "_nav.scss";
 @import "_buttons.scss";
 @import "_forms.scss";

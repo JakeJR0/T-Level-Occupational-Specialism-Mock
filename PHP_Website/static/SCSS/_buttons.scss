@@ -29,3 +29,10 @@
         filter: brightness(1.2);
     }
 }
+
+@media screen and (max-width: 800px) {
+    .btn {
+        width: auto;
+        height: 20px;
+    }
+}

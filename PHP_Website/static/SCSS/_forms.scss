@@ -183,5 +183,29 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
 }
 
+@media screen and (max-width: 768px) {
+    .basic-form {
+        width: 80%;
+    }
+
+    .centred-form-container {
+        width: 90%;
+        margin: auto;
+    }
+}
+
+@media screen and (max-height: 800px) {
+    .basic-form {
+        width: 80%;
+    }
+
+    .centred-form-container {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        margin-top: 1rem;
+    }
+}

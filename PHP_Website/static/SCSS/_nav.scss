@@ -131,6 +131,7 @@
         &.open {
             .content {
                 display: flex;
+                z-index: 100;
             }
 
             .toggle-button {
@@ -139,3 +140,4 @@
         }
     }
 }
+
