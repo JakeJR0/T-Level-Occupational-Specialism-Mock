@@ -316,6 +316,9 @@ function Chat() {
             if (username != null && message != null) {
                 addMessageToChat(chat, username, message);
             }
+        } else if (type == "close_chat") {
+            deleteChats();
+            exitChat();
         } else if (type == "server_message") {
             console.log("Server Message: " + message);
         }

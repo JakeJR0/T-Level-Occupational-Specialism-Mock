@@ -42,7 +42,7 @@ if (session_status() == PHP_SESSION_NONE) {
             // Cookie expires in 1 day
             $cookie_expiration = time() + (86400 * 1);
             setcookie($cookie_name, $cookie_value, $cookie_expiration, "/");
-            
+
             $created_cookie = true;
         }
 
@@ -68,11 +68,9 @@ if (session_status() == PHP_SESSION_NONE) {
             $cookie_security = $_COOKIE["security"];
         }
 
-        echo "<script>
-        function getSecurityAuth() {
-            return '" . $cookie_security . "';
-        }
-        </script>";
+        echo "<script>function getSecurityAuth() {
+            return '" . $cookie_security . "';   
+        }</script>";
     }
     ?>
 </body>
@@ -88,11 +86,6 @@ if (session_status() == PHP_SESSION_NONE) {
                 <button class="chat-exit" onclick="closeChat()">X</button>
             </div>
             <div class="chat-message-container">
-                <button>
-                    <p class="chat-title">100000</p>
-                    <p class="chat-username">John</p>
-                    <p class="chat-status">Open</p>
-                </button>
             </div>
             <div class="chat-input" style="display:none;">
                 <input type="text" placeholder="Type a message...">
@@ -163,7 +156,7 @@ function DisplayUserChat($user)
                 <button class="chat-close">
                     <!-- This is a placeholder (This centers the chat) -->
                 </button>
-                <p>Available Chats</p>
+                <p>Support Chat</p>
                 <button class="chat-exit" onclick="closeChat()">X</button>
             </div>
             <div class="chat-message-container">

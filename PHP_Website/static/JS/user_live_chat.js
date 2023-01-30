@@ -104,6 +104,44 @@ function setupChat() {
 
             socket.on("message", function(data) {
                 try {
+                    if (data["error_code"] == 1) {
+                        console.log("Authentication error");
+
+                        token = getSecurityAuth();
+                        if (token == null || token == "null" || token == "" || token == "undefined" || token == undefined) {
+                            // window.location.href = "./login.php";
+                            console.warn("HERE");
+                            return;
+
+                        };
+                        // alert("Error: Authentication failed, please login into the site.");
+
+                        // var xml = new XMLHttpRequest();
+
+                        // xml.open("POST", "./logout.php", true);
+
+                        // xml.send();
+
+                        function directToLogin(ms) {
+                            setTimeout(function() {
+                                window.location.href = "./login.php";
+                            }, ms);
+                        }
+
+                        // xml.onload = function() {
+                        //     if (xml.status == 200) {
+                        //         directToLogin(1000);
+                        //     } else {
+                        //         window.location.reload();
+                        //     }
+                        // }
+
+                        
+
+                        return;
+                    }
+                    
+
                     if (data["type"] == "chat_history") {
                         return;
                     } else if (data["type"] == "close_chat") {
@@ -117,9 +155,12 @@ function setupChat() {
                         console.log("Server message: " + data["message"]);
                         return;
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.warn(e);
+                }
 
                 addMessageToChat(chat, data['username'], data['message']);
+                
             })
         })
     }

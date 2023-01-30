@@ -1,10 +1,11 @@
-const socket = io('http://172.22.18.4:5000');
+const socket = io('http://localhost:5000');
 
 var events = {
     "chat_open": null,
     "chat_close": null,
     "force_close": closeChatElement
 }
+
 
 function closeChatElement() {
     var chat = document.getElementById('chat');
