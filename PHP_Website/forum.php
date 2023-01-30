@@ -53,13 +53,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 INNER JOIN users ON users.ID = forum.creator_id
                 WHERE forum.thread_id = {$forum_id}
             ";
-
                 $content = mysqli_query($connection, $content_sql);
             }
 
             DisplayForum($forum, $content, $include_purchase_button);
-
-
         } else {
             header("Location: /forums.php");
         }
@@ -99,17 +96,19 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 }
 
-function DisplayForumView($forums, $page_number, $total_pages) {
+function DisplayForumView($forums, $page_number, $total_pages)
+{
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
     <?php
     $page_name = "Forums";
     include 'includes/header.php';
     ?>
+
     <body>
-    <div class="page-title">
+        <div class="page-title">
             <h1>Forums</h1>
             <p>Here you can view content created by our community</p>
         </div>
@@ -124,51 +123,53 @@ function DisplayForumView($forums, $page_number, $total_pages) {
                 $forum_price = $forum["price"];
 
                 $forum_price = floatval($forum_price);
-                $formatted_price = (String) "£" . number_format($forum_price, 2);
+                $formatted_price = (string) "£" . number_format($forum_price, 2);
             ?>
 
-            <a class="list-option" href="?forum=<?= $forum_id ?>">
-                <div class="title">
-                    <p class="title"><?= $forum_title ?></p>
-                    <div class="badges">
-                    <?php
-                        if ($forum_price == 0) {
-                            echo "<p class='badge small free'>Free</p>";
-                        } else {
-                            echo "<p class='badge small paid'>$formatted_price</p>";
-                        }
-                    ?>
+                <a class="list-option" href="?forum=<?= $forum_id ?>">
+                    <div class="title">
+                        <p class="title"><?= $forum_title ?></p>
+                        <div class="badges">
+                            <?php
+                            if ($forum_price == 0) {
+                                echo "<p class='badge small free'>Free</p>";
+                            } else {
+                                echo "<p class='badge small paid'>$formatted_price</p>";
+                            }
+                            ?>
+                        </div>
                     </div>
-                </div>
-                <p class="created">Written on <?= $forum_created_on ?></p>
-                <p class="last-updated">Last Updated on <?= $forum_last_updated ?></p>
-            </a>
+                    <p class="created">Written on <?= $forum_created_on ?></p>
+                    <p class="last-updated">Last Updated on <?= $forum_last_updated ?></p>
+                </a>
             <?php } ?>
             <div class="page-counter">
                 <?php
-                    if ($page_number > 1) {
-                        echo "<a class='page-action' href='?page=".($page_number - 1)."'><</a>'";
-                    }
+                if ($page_number > 1) {
+                    echo "<a class='page-action' href='?page=" . ($page_number - 1) . "'><</a>'";
+                }
 
-                    if ($total_pages == 0) {
-                        $total_pages = 1;
-                    }
+                if ($total_pages == 0) {
+                    $total_pages = 1;
+                }
 
-                    echo "<p class='page-number'>Page $page_number of $total_pages</p>";
+                echo "<p class='page-number'>Page $page_number of $total_pages</p>";
 
-                    if ($page_number < $total_pages) {
-                        echo "<a class='page-action' href='?page=".($page_number + 1)."'>></a>";
-                    }
+                if ($page_number < $total_pages) {
+                    echo "<a class='page-action' href='?page=" . ($page_number + 1) . "'>></a>";
+                }
                 ?>
             </div>
         </div>
     </body>
-</html>
+
+    </html>
 <?php
 
 }
 
-function DisplayForum($forum, $content, $include_purchase_button) {
+function DisplayForum($forum, $content, $include_purchase_button)
+{
     $user_first_name = $forum["first_name"];
     $user_last_name = $forum["last_name"];
     $user_full_name = $user_first_name . " " . $user_last_name;
@@ -183,55 +184,45 @@ function DisplayForum($forum, $content, $include_purchase_button) {
     $forum_price = floatval($forum_price);
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
     <?php
     $page_name = "forums";
     include 'includes/header.php';
     ?>
+
     <body>
         <div class="page-title">
             <h1><?= $forum_title ?></h1>
-            <p>Written by <?= $user_full_name ?></p>
+            <p>Started by <?= $user_full_name ?></p>
         </div>
         <div class="text-container">
             <?php
-                if (!$include_purchase_button) {
+            if (!$include_purchase_button) {
 
-                    for ($i = 0; $i < mysqli_num_rows($content); $i++) {
-                        $message = mysqli_fetch_assoc($content);
-                        $message_id = $message["ID"];
-                        $message_creator_id = $message["creator_id"];
-                        $message_reply_to = $message["reply_to"];
-                        $message_content = $message["content"];
-                        $message_sent_on = $message["sent_on"];
+                for ($i = 0; $i < mysqli_num_rows($content); $i++) {
+                    $message = mysqli_fetch_assoc($content);
+                    $message_id = $message["ID"];
+                    $message_creator_id = $message["creator_id"];
+                    $message_reply_to = $message["replying_to"];
+                    $message_content = $message["message"];
+                    $message_sent_on = $message["sent_on"];
 
-                        $message_creator_first_name = $message["first_name"];
-
-                        if ($message_reply_to == NULL) {
-                            echo "<div class='message'>";
-                            echo "<p class='message-content'>$message_content</p>";
-                            echo "<p class='message-sent-on'>Sent on $message_sent_on</p>";
-                            echo "</div>";
-                        } else {
-                            echo "<div class='message reply'>";
-                            echo "<p class='message-content'>$message_content</p>";
-                            echo "<p class='message-sent-on'>Sent on $message_sent_on</p>";
-                            echo "</div>";
-                        }
-                    }
+                    $message_creator_first_name = $message["first_name"];
                 }
+            }
             ?>
             <a class='bottom-left btn faced-text' href='forums.php'>Back</a>
             <p class="faded-text bottom-right">Last Updated on <?= $forum_last_updated ?></p>
             <?php
-                if ($include_purchase_button) {
-                    echo "<a class='bottom-middle btn' href='purchase.php?forum={$forum_id}'>Purchase forum</a>";
-                }
+            if ($include_purchase_button) {
+                echo "<a class='bottom-middle btn' href='purchase.php?forum={$forum_id}'>Purchase forum</a>";
+            }
             ?>
         </div>
     </body>
-</html>
+
+    </html>
 <?php
 }
 ?>
