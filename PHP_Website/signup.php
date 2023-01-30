@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $sql = "
             INSERT INTO users (first_name, last_name, email, dob, membership_type, password, private_key)
-            VALUES ('$first_name', '$last_name', '$email', '$dob', '$membership_type', '".$password_hash."', '$private_key');
+            VALUES ('$first_name', '$last_name', '$email', '$dob', '$membership_type', '" . $password_hash . "', '$private_key');
         ";
 
         $result = mysqli_query($connection, $sql);
@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $_SESSION['user'] = $user;
             $_SESSION["logged_in"] = true;
-            $success = "Successfully created your account with Gym ID: ". $user['ID'];
+            $success = "Successfully created your account with Gym ID: " . $user['ID'];
         } else {
             $errors[] = "Signup failed, please try again later";
         }
@@ -124,56 +124,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <?php
-    $page_name = "Signup";
-    include 'includes/header.php';
-    ?>
-    <body>
-        <div class="centred-form-container">
-            <div class="basic-form">
-                <h1>Signup</h1>
-                <p>Please type your details to create an account</p>
-                <?php if (isset($errors)) {
-                    echo "<div class='errors'>";
-                        foreach ($errors as $error) {
-                            echo "<p>".$error."</p>";
-                        }
-                    echo "</div>";
-                } ?>
-                <?php if (isset($success)) {
-                    echo "<div class='success'>";
-                        echo $success;
-                    echo "</div>";
-                } ?>
-                <form action="" method="POST">
-                    <input type="email" alt="Email Address" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
-                    <input type="text" alt="First Name" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>
-                    <input type="text" alt="Last Name" name="last_name" minlength="4" maxlength="30" id="last_name" placeholder="Last Name" required>
-                    <input type="date" alt="Date of Birth" name="dob" id="dob" placeholder="Date of Birth" required>
-                    <div class="radio-option">
-                        <div>
-                            <input type="radio" alt="Basic Membership" name="membership_type" id="basic" value="basic">
-                            <label for="basic">Basic Membership</label>
-                            <p>£8 Per Month</p>
-                        </div>
-                        <div>
-                            <input type="radio" alt="Pro Membership" name="membership_type" id="pro" value="pro">
-                            <label for="pro">Pro Membership</label>
-                            <p>£12 Per Month</p>
-                        </div>
-                        <div>
-                            <input type="radio" alt="Student Membership" name="membership_type" id="student" value="student">
-                            <label for="student">Student Membership</label>
-                            <p>£4 Per Month</p>
-                        </div>
+<?php
+$page_name = "Signup";
+include 'includes/header.php';
+?>
+
+<body>
+    <div class="centred-form-container">
+        <div class="basic-form">
+            <h1 aria-label="Signup Form">Signup</h1>
+            <p aria-label="Please type your details">Please type your details to create an account</p>
+            <?php if (isset($errors)) {
+                echo "<div class='errors'>";
+                foreach ($errors as $error) {
+                    echo "<p aria-label='" . $error . "'>" . $error . "</p>";
+                }
+                echo "</div>";
+            } ?>
+            <?php if (isset($success)) {
+                echo "<div aria-label='" . $success . "' class='success'>";
+                echo $success;
+                echo "</div>";
+            } ?>
+            <form action="" method="POST">
+                <input type="email" alt="Email Address" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
+                <input type="text" alt="First Name" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>
+                <input type="text" alt="Last Name" name="last_name" minlength="4" maxlength="30" id="last_name" placeholder="Last Name" required>
+                <input type="date" alt="Date of Birth" name="dob" id="dob" placeholder="Date of Birth" required>
+                <div class="radio-option">
+                    <div>
+                        <input type="radio" alt="Basic Membership" name="membership_type" id="basic" value="basic">
+                        <label for="basic" aria-label="Basic Membership">Basic Membership</label>
+                        <p aria-label="£8 Per month">£8 Per Month</p>
                     </div>
-                    <input type="password" alt="Password" name="password" minlength="8" maxlength="20" id="password" placeholder="Password" required>
-                    <input type="password" alt="Confirm Password" name="confirm_password" minlength="8" maxlength="20" id="confirm_password" placeholder="Confirm Password" required>
-                    <span class="separator"></span>
-                    <a href="login.php">Already have an account?</a>
-                    <button type="submit" name="submit">Signup</button>
-                </form>
-            </div>
+                    <div>
+                        <input type="radio" alt="Pro Membership" name="membership_type" id="pro" value="pro">
+                        <label aria-label="Pro Membership" for="pro">Pro Membership</label>
+                        <p aria-label="£12 Per Month">£12 Per Month</p>
+                    </div>
+                    <div>
+                        <input type="radio" alt="Student Membership" name="membership_type" id="student" value="student">
+                        <label aria-label="Student Membership" for="student">Student Membership</label>
+                        <p aria-label="£4 Per Month">£4 Per Month</p>
+                    </div>
+                </div>
+                <input type="password" alt="Password" name="password" minlength="8" maxlength="20" id="password" placeholder="Password" required>
+                <input type="password" alt="Confirm Password" name="confirm_password" minlength="8" maxlength="20" id="confirm_password" placeholder="Confirm Password" required>
+                <span class="separator"></span>
+                <a href="login.php" aria-label="Already Signed up?">Already have an account?</a>
+                <button type="submit" aria-label="Submit Signup Form" name="submit">Signup</button>
+            </form>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>

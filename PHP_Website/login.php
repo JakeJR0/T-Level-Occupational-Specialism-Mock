@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user['user_type'] = $row['user_type'];
             $user['dob'] = $row['dob'];
             $user['membership_type'] = $row['membership_type'];
-            $user["private_key"] = $row['private_key'];
+            $user["private_key"] = $row["private_key"];
             $_SESSION['user'] = $user;
             $_SESSION["logged_in"] = true;
 
@@ -72,38 +72,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <?php
-    $page_name = "Login";
-    include 'includes/header.php';
-    ?>
-    <body>
-        <div class="centred-form-container">
-            <div class="basic-form">
-                <div class="form-title">
-                    <h1>Login</h1>
-                    <p>Please type your details to login</p>
-                    <?php if (isset($errors)) {
+<?php
+$page_name = "Login";
+include 'includes/header.php';
+?>
+
+<body>
+    <div class="centred-form-container">
+        <div class="basic-form">
+            <div class="form-title">
+                <h1 aria-label="Login">Login</h1>
+                <p aria-label="Please type your login details">Please type your details to login</p>
+                <?php if (isset($errors)) {
                     echo "<div class='errors'>";
-                        foreach ($errors as $error) {
-                            echo "<p>".$error."</p>";
-                        }
+                    foreach ($errors as $error) {
+                        echo "<p>" . $error . "</p>";
+                    }
                     echo "</div>";
-                    } ?>
-                    <?php if (isset($success)) {
-                        echo "<div class='success'>";
-                            echo $success;
-                            echo "<script>setTimeout(function(){window.location.href = 'index.php';}, 2000);</script>";
-                        echo "</div>";
-                    } ?>
-                </div>
-                <form action="" method="POST">
-                    <input type="text" alt="Email Address" name="gym_id" minlength="6" maxlength="6" id="gym_id" placeholder="Gym Membership ID / Staff ID" required>
-                    <input type="password" alt="Password" name="password" minlength="8" maxlength="20" id="password" placeholder="Password" required>
-                    <span class="separator"></span>
-                    <a href="signup.php">Need to create an account?</a>
-                    <button type="submit" name="submit">Login</button>
-                </form>
+                } ?>
+                <?php if (isset($success)) {
+                    echo "<div class='success'>";
+                    echo $success;
+                    echo "<script>setTimeout(function(){window.location.href = 'index.php';}, 2000);</script>";
+                    echo "</div>";
+                } ?>
             </div>
+            <form action="" method="POST">
+                <input type="text" alt="Email Address" name="gym_id" minlength="6" maxlength="6" id="gym_id" placeholder="Gym Membership ID / Staff ID" required>
+                <input type="password" alt="Password" name="password" minlength="8" maxlength="20" id="password" placeholder="Password" required>
+                <span class="separator"></span>
+                <a href="signup.php" aria-label="Signup Page">Need to create an account?</a>
+                <button type="submit" name="submit" aria-label="Submit Login Form">Login</button>
+            </form>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>

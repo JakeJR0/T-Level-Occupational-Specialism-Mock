@@ -6,11 +6,12 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Destroy the session
 session_destroy();
-// Removes the security cookie
-setcookie("security", "", time() - 3600, "/");
 
+// Removes Security Cookie
+
+if (isset($_COOKIE["security"])) {
+    unset($_COOKIE["security"]);
+}
 
 
 header("Location: index.php");
-
-?>
