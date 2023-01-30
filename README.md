@@ -40,7 +40,7 @@ ToKa Fitness currently provides customers with:
 - [X] Sign Up
 - [ ] Forum
 - [X] Free Content
-- [ ] Paid Content
+- [X] Paid Content
 - [ ] Chat
 - [X] Contact Form
 - [X] About Page
@@ -84,6 +84,8 @@ ToKa Fitness currently provides customers with:
 ## Pages
 
 - Home Page
+- Article Page
 - Login Page
 - Sign-up Page
-- Forum Pages (Search able)
+- Forum Pages
+- About Page
