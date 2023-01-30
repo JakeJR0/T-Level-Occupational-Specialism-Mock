@@ -65,36 +65,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
-    <?php
-    $page_name = "Contact";
-    include 'includes/header.php';
-    ?>
-    <body>
-        <div class="centred-form-container">
-            <div class="basic-form">
-                <h1>ToKa Fitness Contact Form</h1>
-                <?php
-                    if ($success) {
-                        echo "<p class='success'>Thank you for your message, we will get back to you as soon as possible.</p>";
-                    } else {
-                        echo '<div class="errors">';
+<?php
+$page_name = "Contact";
+include 'includes/header.php';
+?>
 
-                        foreach ($errors as $error) {
-                            echo "<p>$error</p>";
-                        }
+<body>
+    <div class="centred-form-container">
+        <div class="basic-form">
+            <h1 aria-label="ToKa Fitness Contact Form">ToKa Fitness Contact Form</h1>
+            <?php
+            if ($success) {
+                echo "<p aria-label='Thank you for your message' class='success'>Thank you for your message, we will get back to you as soon as possible.</p>";
+            } else {
+                echo '<div class="errors">';
 
-                        echo '</div>';
-                    }
-                ?>
+                foreach ($errors as $error) {
+                    echo "<p aria-label='$error'>$error</p>";
+                }
 
-                <form action="" method="POST">
-                    <input type="email" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
-                    <input type="text" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>
-                    <input type="text" name="last_name" minlength="4" maxlength="30" id="last_name" placeholder="Last Name" required>
-                    <textarea type="text" name="message" minlength="50" maxlength="255" id="message" placeholder="Message" required></textarea>
-                    <button type="submit" name="submit">Submit</button>
-                </form>
-            </div>
+                echo '</div>';
+            }
+            ?>
+
+            <form action="" method="POST">
+                <input aria-label="Email" type="email" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
+                <input type="text" aria-label="First Name" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>
+                <input type="text" aria-label="Last Name" name="last_name" minlength="4" maxlength="30" id="last_name" placeholder="Last Name" required>
+                <textarea type="text" aria-label="Message" name="message" minlength="50" maxlength="255" id="message" placeholder="Message" required></textarea>
+                <button type="submit" name="submit" aria-label="Submit Button">Submit</button>
+            </form>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
