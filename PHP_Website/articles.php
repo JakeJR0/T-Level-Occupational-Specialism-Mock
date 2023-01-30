@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         ";
 
         $articles_sql = "
-            SELECT ID, title, created_on, last_updated, price
+            SELECT ID, title, DATE_FORMAT(created_on, '%d/%m/%Y') AS created_on, DATE_FORMAT(last_updated, '%d/%m/%Y') AS last_updated, price
             FROM articles
             ORDER BY created_on DESC
             LIMIT $offset, $page_size
@@ -84,17 +84,19 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 }
 
-function DisplayArticleView($articles, $page_number, $total_pages) {
+function DisplayArticleView($articles, $page_number, $total_pages)
+{
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
     <?php
     $page_name = "Articles";
     include 'includes/header.php';
     ?>
+
     <body>
-    <div class="page-title">
+        <div class="page-title">
             <h1>Articles</h1>
             <p>Here you can view content created by our staff members</p>
         </div>
@@ -109,51 +111,53 @@ function DisplayArticleView($articles, $page_number, $total_pages) {
                 $article_price = $article["price"];
 
                 $article_price = floatval($article_price);
-                $formatted_price = (String) "£" . number_format($article_price, 2);
+                $formatted_price = (string) "£" . number_format($article_price, 2);
             ?>
 
-            <a class="list-option" href="?article=<?= $article_id ?>">
-                <div class="title">
-                    <p class="title"><?= $article_title ?></p>
-                    <div class="badges">
-                    <?php
-                        if ($article_price == 0) {
-                            echo "<p class='badge small free'>Free</p>";
-                        } else {
-                            echo "<p class='badge small paid'>$formatted_price</p>";
-                        }
-                    ?>
+                <a class="list-option" href="?article=<?= $article_id ?>">
+                    <div class="title">
+                        <p class="title"><?= $article_title ?></p>
+                        <div class="badges">
+                            <?php
+                            if ($article_price == 0) {
+                                echo "<p class='badge small free'>Free</p>";
+                            } else {
+                                echo "<p class='badge small paid'>$formatted_price</p>";
+                            }
+                            ?>
+                        </div>
                     </div>
-                </div>
-                <p class="created">Written on <?= $article_created_on ?></p>
-                <p class="last-updated">Last Updated on <?= $article_last_updated ?></p>
-            </a>
+                    <p class="created">Written on <?= $article_created_on ?></p>
+                    <p class="last-updated">Last Updated on <?= $article_last_updated ?></p>
+                </a>
             <?php } ?>
             <div class="page-counter">
                 <?php
-                    if ($page_number > 1) {
-                        echo "<a class='page-action' href='?page=".($page_number - 1)."'><</a>'";
-                    }
+                if ($page_number > 1) {
+                    echo "<a class='page-action' href='?page=" . ($page_number - 1) . "'><</a>'";
+                }
 
-                    if ($total_pages == 0) {
-                        $total_pages = 1;
-                    }
+                if ($total_pages == 0) {
+                    $total_pages = 1;
+                }
 
-                    echo "<p class='page-number'>Page $page_number of $total_pages</p>";
+                echo "<p class='page-number'>Page $page_number of $total_pages</p>";
 
-                    if ($page_number < $total_pages) {
-                        echo "<a class='page-action' href='?page=".($page_number + 1)."'>></a>";
-                    }
+                if ($page_number < $total_pages) {
+                    echo "<a class='page-action' href='?page=" . ($page_number + 1) . "'>></a>";
+                }
                 ?>
             </div>
         </div>
     </body>
-</html>
+
+    </html>
 <?php
 
 }
 
-function DisplayArticle($article, $include_purchase_button) {
+function DisplayArticle($article, $include_purchase_button)
+{
     $user_first_name = $article["first_name"];
     $user_last_name = $article["last_name"];
     $user_full_name = $user_first_name . " " . $user_last_name;
@@ -166,12 +170,13 @@ function DisplayArticle($article, $include_purchase_button) {
     $article_price = floatval($article_price);
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
     <?php
     $page_name = "Articles";
     include 'includes/header.php';
     ?>
+
     <body>
         <div class="page-title">
             <h1><?= $article_title ?></h1>
@@ -182,13 +187,14 @@ function DisplayArticle($article, $include_purchase_button) {
             <a class='bottom-left btn faced-text' href='articles.php'>Back</a>
             <p class="faded-text bottom-right">Last Updated on <?= $article_last_updated ?></p>
             <?php
-                if ($include_purchase_button) {
-                    echo "<a class='bottom-middle btn' href='purchase.php?article={$article_id}'>Purchase Article</a>";
-                }
+            if ($include_purchase_button) {
+                echo "<a class='bottom-middle btn' href='purchase.php?article={$article_id}'>Purchase Article</a>";
+            }
             ?>
         </div>
     </body>
-</html>
+
+    </html>
 <?php
 }
 ?>
