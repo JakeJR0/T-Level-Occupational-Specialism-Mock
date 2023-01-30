@@ -24,6 +24,7 @@ app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "secret!"
 
+
 # MySQL configurations
 
 app.config["MYSQL_HOST"] = "localhost"
@@ -47,11 +48,23 @@ def security_to_user(security_key: int) -> int:
     """
 
     cursor = mysql.connection.cursor()
-    print(security_key)
 
     cursor.execute("SELECT ID FROM users WHERE private_key = %s", (security_key,))
 
-    user_id = cursor.fetchone()["ID"]
+    result = cursor.fetchone()
+
+    user_id = getattr(result, "ID", 0)
+
+    if user_id == 0:
+        send(
+            {
+                "error_code": 1,
+                "message": "You are not either logged in or your private key is incorrect",
+                "client_id": request.sid,
+                "user_id": user_id,
+                "username": "Server",
+            }
+        )
 
     return user_id
 
@@ -64,7 +77,8 @@ def user_id_to_first_name(user_id: int) -> str:
 
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT first_name FROM users WHERE ID = %s", (user_id,))
-    first_name = cursor.fetchone()["first_name"]
+    result = cursor.fetchone()
+    first_name = getattr(result, "first_name", "Unknown")
 
     return first_name
 
@@ -77,7 +91,8 @@ def user_is_staff(user_id: int) -> bool:
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT user_type FROM users WHERE ID = %s", (user_id,))
 
-    user_type = cursor.fetchone()["user_type"]
+    result = cursor.fetchone()
+    user_type = getattr(result, "user_type", "user")
 
     is_staff = False
 
@@ -99,9 +114,12 @@ def get_current_chat_id(user_id: int) -> int:
     cursor.execute(
         "SELECT ID FROM support_chat WHERE user_id = %s ORDER BY ID DESC", (user_id,)
     )
-    chat_id = cursor.fetchone()["ID"]
+
+    result = cursor.fetchone()
+    chat_id = getattr(result, "ID", 0)
 
     return chat_id
+
 
 def user_owns_chat_id(user_id: int, chat_id: int) -> bool:
     """
@@ -119,6 +137,7 @@ def user_owns_chat_id(user_id: int, chat_id: int) -> bool:
         return False
     else:
         return True
+
 
 def add_message_to_chat(chat_id: int, user_id: int, message: str) -> None:
     """
@@ -140,7 +159,7 @@ def add_message_to_chat(chat_id: int, user_id: int, message: str) -> None:
 @socketio.on("connect")
 def handle_connect():
     """
-        This function handles the connection event.
+    This function handles the connection event.
     """
 
     print("Client connected, Client ID: ", request.sid)
@@ -157,7 +176,7 @@ def handle_connect():
 @socketio.on("disconnect")
 def handle_disconnect():
     """
-        This function handles the disconnect event.
+    This function handles the disconnect event.
     """
     print("Client disconnected, Client ID: ", request.sid)
     send(
@@ -173,10 +192,10 @@ def handle_disconnect():
 @socketio.on("message")
 def handle_message(data):
     """
-        This function handles the message event and controls what happens when a message is sent.
+    This function handles the message event and controls what happens when a message is sent.
 
-        This function is used to send messages to the chat server and to the users additionally this
-        function is used to send messages to the database which can be viewed by the database admins.
+    This function is used to send messages to the chat server and to the users additionally this
+    function is used to send messages to the database which can be viewed by the database admins.
     """
 
     security_key: int = data["token"]
@@ -189,6 +208,9 @@ def handle_message(data):
 
     # Gets the user ID
     user_id = security_to_user(security_key)
+
+    if user_id == 0:
+        return
 
     if user_is_staff(user_id):
         chat_id: int = data["chat_id"]
@@ -220,17 +242,18 @@ def handle_message(data):
 @socketio.on("get_chat_messages")
 def handle_get_chat_history(data):
     """
-        This function / event is primarily used for admins as they cannot load all of the users chats
-        and messages at once, this function is used to get the messages for a specific chat.
+    This function / event is primarily used for admins as they cannot load all of the users chats
+    and messages at once, this function is used to get the messages for a specific chat.
 
-        Additionally, this verifies that the user is a staff member in order to prevent users from
-        accessing the chat history of other users.
+    Additionally, this verifies that the user is a staff member in order to prevent users from
+    accessing the chat history of other users.
     """
-
 
     user_token = data["token"]
     chat_id = data["chat_id"]
     user_id = security_to_user(user_token)
+    if user_id == 0:
+        return
     staff = user_is_staff(user_id)
 
     if staff:
@@ -267,11 +290,13 @@ def handle_get_chat_history(data):
 @socketio.on("create_chat")
 def handle_create_chat(data):
     """
-        This function handles the create chat event and creates a new chat for the user.
+    This function handles the create chat event and creates a new chat for the user.
     """
     user_token = data["token"]
     print(data)
     user_id = security_to_user(user_token)
+    if user_id == 0:
+        return
 
     cursor = mysql.connection.cursor()
     # Creates a new chat
@@ -286,7 +311,14 @@ def handle_create_chat(data):
     print("Session ID: ", request.sid)
     # Send message to the user
     socketio.emit(
-        "message", {"message": f"You started chat with ID: #{chat_id}", "type": "created_chat", "username": "Server", "chat_id": chat_id}, room=request.sid
+        "message",
+        {
+            "message": f"You started chat with ID: #{chat_id}",
+            "type": "created_chat",
+            "username": "Server",
+            "chat_id": chat_id,
+        },
+        room=request.sid,
     )
 
     user_username = user_id_to_first_name(user_id)
@@ -301,7 +333,7 @@ def handle_create_chat(data):
             "message": f"User with ID: #{user_id} has started a new chat with ID: #{chat_id}",
             "type": "chat_created",
             "chat_id": chat_id,
-            "chat_username": user_username
+            "chat_username": user_username,
         },
         room="staff",
     )
@@ -310,13 +342,15 @@ def handle_create_chat(data):
 @socketio.on("join_staff")
 def handle_join_staff(data):
     """
-        This function handles the join staff event and joins the user to the staff room.
+    This function handles the join staff event and joins the user to the staff room.
 
-        The staff room is used to send messages to all of the staff members at once such as
-        when a new chat is created.
+    The staff room is used to send messages to all of the staff members at once such as
+    when a new chat is created.
     """
     token = data["token"]
     user_id = security_to_user(token)
+    if user_id == 0:
+        return
 
     # Checks if the user is staff
     valid = user_is_staff(user_id)
@@ -325,7 +359,11 @@ def handle_join_staff(data):
         join_room("staff")
         socketio.emit(
             "message",
-            {"message": "You have joined the staff room", "type":"server_message", "user_id": user_id},
+            {
+                "message": "You have joined the staff room",
+                "type": "server_message",
+                "user_id": user_id,
+            },
             room=request.sid,
         )
 
@@ -333,13 +371,15 @@ def handle_join_staff(data):
 @socketio.on("request_chats")
 def handle_request_chats(data):
     """
-        This function is only used by staff members and is used to get all of the open chats.
+    This function is only used by staff members and is used to get all of the open chats.
 
-        This is used to display the chats in the staff panel.
+    This is used to display the chats in the staff panel.
     """
 
     token = data["token"]
     user_id = security_to_user(token)
+    if user_id == 0:
+        return
 
     # Checks if the user is staff
     valid = user_is_staff(user_id)
@@ -367,15 +407,17 @@ def handle_request_chats(data):
 @socketio.on("join_chat")
 def handle_join_chat(data):
     """
-        This function handles the join chat event and joins the user to the chat room.
+    This function handles the join chat event and joins the user to the chat room.
 
-        The chat room is used to send messages to all of the users in the chat at once.
+    The chat room is used to send messages to all of the users in the chat at once.
 
-        Additionally, this verifies that the user has access to the chat in order to prevent users from
-        accessing the chat history of other users.
+    Additionally, this verifies that the user has access to the chat in order to prevent users from
+    accessing the chat history of other users.
     """
     user_token = data["token"]
     user_id = security_to_user(user_token)
+    if user_id == 0:
+        return
 
     staff = user_is_staff(user_id)
 
@@ -420,7 +462,7 @@ def handle_join_chat(data):
             {
                 "message": f"Staff Member {username} has joined the chat",
                 "type": "message",
-                "username": "Server"
+                "username": "Server",
             },
             room=str(chat_id),
         )
@@ -433,6 +475,8 @@ def handle_leave_chat(data):
     chat = data["chat_id"]
     user_token = data["token"]
     user_id = security_to_user(user_token)
+    if user_id == 0:
+        return
 
     staff = user_is_staff(user_id)
 
@@ -440,7 +484,11 @@ def handle_leave_chat(data):
 
     socketio.emit(
         "message",
-        {"message": "You have left the chat", "type": "server_message", "username": "Server"},
+        {
+            "message": "You have left the chat",
+            "type": "server_message",
+            "username": "Server",
+        },
         room=request.sid,
     )
 
@@ -453,7 +501,7 @@ def handle_leave_chat(data):
             {
                 "message": f"Staff Member {username} has left the chat",
                 "type": "message",
-                "username": "Server"
+                "username": "Server",
             },
             room=str(chat),
         )
@@ -463,7 +511,7 @@ def handle_leave_chat(data):
             {
                 "message": f"User with ID: #{user_id} has left the chat",
                 "type": "message",
-                "username": "Server"
+                "username": "Server",
             },
             room=str(chat),
         )
@@ -474,6 +522,8 @@ def handle_close_chat(data):
     chat_id = data["chat_id"]
     user_token = data["token"]
     user_id = security_to_user(user_token)
+    if user_id == 0:
+        return
 
     staff = user_is_staff(user_id)
     user_chat = user_owns_chat_id(user_id, chat_id)
@@ -488,11 +538,13 @@ def handle_close_chat(data):
     if not has_access:
         socketio.emit(
             "message",
-            {"message": "You do not have permission to close this chat", "type": "error"},
+            {
+                "message": "You do not have permission to close this chat",
+                "type": "error",
+            },
             room=request.sid,
         )
         return
-
 
     cursor = mysql.connection.cursor()
     cursor.execute(
@@ -510,7 +562,7 @@ def handle_close_chat(data):
                 "type": "close_chat",
                 "chat_id": chat_id,
                 "user_id": user_id,
-                "username": "Server"
+                "username": "Server",
             },
             room=str(chat_id),
         )
@@ -522,7 +574,7 @@ def handle_close_chat(data):
                 "message": "Chat closed",
                 "type": "close_chat",
                 "chat_id": chat_id,
-                "user_id": user_id
+                "user_id": user_id,
             },
             room="staff",
         )
@@ -531,16 +583,26 @@ def handle_close_chat(data):
         # Sends message to the user that the chat has been closed
         socketio.emit(
             "message",
-            {"message": "Chat closed", "type": "close_chat", "chat_id": chat_id, "username": "Server"},
+            {
+                "message": "Chat closed",
+                "type": "close_chat",
+                "chat_id": chat_id,
+                "username": "Server",
+            },
             room=str(chat_id),
         )
 
         # Sends message to the staff that the chat has been closed
         socketio.emit(
             "message",
-            {"message": "Chat closed by user", "type": "close_chat", "chat_id": chat_id},
+            {
+                "message": "Chat closed by user",
+                "type": "close_chat",
+                "chat_id": chat_id,
+            },
             room="staff",
         )
+
 
 if __name__ == "__main__":
     print("Starting server")
