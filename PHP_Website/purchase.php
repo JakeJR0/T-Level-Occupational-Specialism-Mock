@@ -97,6 +97,13 @@ function HandleForumPurchase($forum_id)
 
     $user_id = $user["ID"];
 
+    $forum_id = trim($forum_id);
+    $user_id = trim($user_id);
+
+    $forum_id = mysqli_real_escape_string($connection, $forum_id);
+    $user_id = mysqli_real_escape_string($connection, $user_id);
+
+
     $forum_check_sql = "
         SELECT ID
         FROM forum_purchase_history
@@ -139,6 +146,12 @@ function HandleArticlePurchase($article_id)
     require_once "../storage.php";
 
     $user_id = $user["ID"];
+
+    $article_id = trim($article_id);
+    $user_id = trim($user_id);
+
+    $article_id = mysqli_real_escape_string($connection, $article_id);
+    $user_id = mysqli_real_escape_string($connection, $user_id);
 
     $article_check_sql = "
         SELECT ID
