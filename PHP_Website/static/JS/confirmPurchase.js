@@ -37,8 +37,7 @@ function handleConfirmPurchase(url_to_redirect, cancelled_url) {
     var userConfirmation = confirm("Are you sure you want to purchase this " + productType + "?");
     var titleMessage = "";
     var message = "";
-    var url = "";
-
+    var url;
 
     if (userConfirmation == true) {
         titleMessage = "Thank you for confirming your purchase!";
@@ -46,7 +45,7 @@ function handleConfirmPurchase(url_to_redirect, cancelled_url) {
         url = url_to_redirect;
     } else {
         titleMessage = "You have cancelled your purchase.";
-        message = "You will be redirected to the home page shortly.";
+        message = "You will be redirected to back shortly.";
         url = cancelled_url;
     }
 
@@ -59,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // cancelUrl has been defined in the PHP file
     
     try {
-        handleConfirmPurchase(endUrl, cancelUrl);
+        handleConfirmPurchase(endUrl, cancelledUrl);
     } catch (e) {
         console.log(e);
     }
