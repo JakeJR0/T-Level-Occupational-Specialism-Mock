@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS articles (
     title VARCHAR(20) NOT NULL,
     description VARCHAR(100) NOT NULL,
     content VARCHAR(10000) NOT NULL,
-    price INTEGER DEFAULT 0 NOT NULL,
+    price DECIMAL(10, 2) DEFAULT 0 NOT NULL,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES users(ID)
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS forum_threads(
     title VARCHAR(20) NOT NULL,
     description VARCHAR(1000) NOT NULL,
     thread_type VARCHAR(20) NOT NULL,
-    price INTEGER DEFAULT 0 NOT NULL,
+    price DECIMAL(10, 2) DEFAULT 0 NOT NULL,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES users(ID)
@@ -141,7 +141,4 @@ for ($i = 0; $i < count($create_tables); $i++) {
         error_log("Error creating table: " . $e->getMessage());
         exit("<h1 class='center-text'>Unexpected error occurred. Please try again later.</h1>");
     }
-
 }
-
-?>
