@@ -251,7 +251,6 @@ def handle_message(data):
         # Gets the chat ID
         chat_id = get_current_chat_id(user_id)
 
-    print("Chat ID: R ", chat_id)
     add_message_to_chat(chat_id, user_id, message)
 
     # Gets the users first name
@@ -480,7 +479,6 @@ def handle_join_chat(data):
 
         if found:
             join_room(str(chat_id))
-            print("Joined room: ", str(chat_id))
             socketio.emit(
                 "join", {"message": "You have joined the chat", "chat_id": chat_id}
             )
@@ -637,6 +635,7 @@ def handle_close_chat(data):
         )
 
 
+# This checks if the file is being run directly
 if __name__ == "__main__":
     print("Starting server")
     socketio.run(app=app, host="0.0.0.0")

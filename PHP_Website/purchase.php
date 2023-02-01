@@ -3,13 +3,17 @@
 // Checks if the server request is a GET request
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    // Gets the forum ID from the GET request
     $forum = $_GET["forum"] ?? null;
+    // Gets the article ID from the GET request
     $article = $_GET["article"] ?? null;
 
+    // Starts the session
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
 
+    // Checks if the user is logged in
     $logged_in = $_SESSION["logged_in"] ?? false;
     $user = $_SESSION["user"] ?? null;
 
@@ -19,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         return;
     }
 
+    // Checks if the user has confirmed the purchase
     if (!isset($_GET["confirmed"])) {
         $purchase_type = "";
 
@@ -53,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             <title>Confirm Purchase</title>
             <link rel="stylesheet" href="./static/CSS/main.css">
             <script type="text/javascript">
+                // Passes the purchase type, end URL and cancelled URL to the JS file from the PHP file
                 const purchaseType = "<?= $purchase_type ?>"
                 const endUrl = "<?= $end_url ?>"
                 const cancelledUrl = "<?= $cancelled_url ?>"
@@ -60,6 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             <script src="./static/JS/confirmPurchase.js"></script>
         </head>
         <?php
+        // Include the header.php file
         include 'includes/header.php'; ?>
 
         <body>
@@ -80,6 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
 function HandleForumPurchase($forum_id)
 {
+    // Starts the session
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -97,6 +105,7 @@ function HandleForumPurchase($forum_id)
 
     $user_id = $user["ID"];
 
+    // Sanitise the forum ID and user ID
     $forum_id = trim($forum_id);
     $user_id = trim($user_id);
 
@@ -147,6 +156,8 @@ function HandleArticlePurchase($article_id)
 
     $user_id = $user["ID"];
 
+    // Sanitise the article ID and user ID
+
     $article_id = trim($article_id);
     $user_id = trim($user_id);
 
@@ -190,11 +201,12 @@ function DisplayPurchaseConfirmation($type = "", $item_id = "")
         <?php include 'includes/header.php'; ?>
 
         <body>
+            <!-- Page Title -->
             <div class="page-title space">
-                <h1><?= ucfirst($type) ?> Purchase Confirmation</h1>
+                <h1 aria-label="Purchase Confirmation"><?= ucfirst($type) ?> Purchase Confirmation</h1>
             </div>
             <div class="text-container">
-                <h2 class="center-text">You have successfully purchased this <?= $type ?>!</h2>
+                <h2 aria-label="You have purchased an <?= $type ?>" class="center-text">You have successfully purchased this <?= $type ?>!</h2>
                 <?php
                 $url = "";
                 if ($type == "article") {

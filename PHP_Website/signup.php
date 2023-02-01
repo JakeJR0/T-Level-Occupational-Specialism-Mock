@@ -4,6 +4,8 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get the form data
+
     $email = $_POST["email"];
     $first_name = $_POST["first_name"];
     $last_name = $_POST["last_name"];
@@ -14,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $valid = true;
 
+    // Sanitize the input
     $first_name = trim($first_name);
     $last_name = trim($last_name);
     $email = trim($email);
@@ -39,6 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $membership_type = mysqli_real_escape_string($connection, $membership_type);
     $password = mysqli_real_escape_string($connection, $password);
     $confirm_password = mysqli_real_escape_string($connection, $confirm_password);
+
+    // Validate the inputs
 
     if ($password != $confirm_password) {
         $errors['password'] = "Passwords do not match";
@@ -72,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($valid) {
 
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        // Generates a random private key
         $private_key = bin2hex(random_bytes(256));
         // Ensures that the private key is unique
 
@@ -132,6 +138,7 @@ include 'includes/header.php';
 <body>
     <div class="centred-form-container">
         <div class="basic-form">
+            <!-- Page Title -->
             <h1 aria-label="Signup Form">Signup</h1>
             <p aria-label="Please type your details">Please type your details to create an account</p>
             <?php if (isset($errors)) {
@@ -146,6 +153,7 @@ include 'includes/header.php';
                 echo $success;
                 echo "</div>";
             } ?>
+            <!-- Signup Form -->
             <form action="" method="POST">
                 <input type="email" alt="Email Address" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
                 <input type="text" alt="First Name" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>

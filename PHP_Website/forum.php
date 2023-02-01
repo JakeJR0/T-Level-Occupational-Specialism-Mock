@@ -1,4 +1,9 @@
 <?php
+// Removed due to lack of time
+
+header("Location: /index.php");
+
+
 require_once '../storage.php';
 
 

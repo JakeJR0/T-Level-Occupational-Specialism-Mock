@@ -1,13 +1,18 @@
 <?php
+// Gets the database connection
 require_once '../storage.php';
 
-
+// Checks if the user has issued a GET request
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    // Starts the session
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
 
+    // Checks if the parameter 'article' is set
+
     if (isset($_GET["article"])) {
+        // Gets the article ID from the GET request
         $article_id = $_GET["article"];
 
         $article_id = trim($article_id);

@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user[] = array();
         require_once '../storage.php';
 
+        // Sanitize the input
         $gym_id = trim($gym_id);
         $password = trim($password);
 
@@ -49,6 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $row = mysqli_fetch_assoc($login_result);
         $stored_password = $row['password'] ?? "";
+
+        // Check if the password is correct
         if (password_verify($password, $stored_password)) {
             $user['ID'] = $row['ID'];
             $user['first_name'] = $row['first_name'];
@@ -81,6 +84,7 @@ include 'includes/header.php';
     <div class="centred-form-container">
         <div class="basic-form">
             <div class="form-title">
+                <!-- Page Title -->
                 <h1 aria-label="Login">Login</h1>
                 <p aria-label="Please type your login details">Please type your details to login</p>
                 <?php if (isset($errors)) {
@@ -97,6 +101,7 @@ include 'includes/header.php';
                     echo "</div>";
                 } ?>
             </div>
+            <!-- Login Form -->
             <form action="" method="POST">
                 <input type="text" alt="Email Address" name="gym_id" minlength="6" maxlength="6" id="gym_id" placeholder="Gym Membership ID / Staff ID" required>
                 <input type="password" alt="Password" name="password" minlength="8" maxlength="20" id="password" placeholder="Password" required>

@@ -50,10 +50,12 @@ if (session_status() == PHP_SESSION_NONE) {
 
         switch ($account_type) {
             case "user":
+                // Loads the user chat script
                 echo "<script defer src='./static/JS/user_live_chat.js'></script>";
                 DisplayUserChat($user);
                 break;
             case "admin":
+                // Loads the staff chat script
                 echo "<script defer src='./static/JS/staff_live_chat.js'></script>";
                 DisplayStaffChat($user);
                 break;
@@ -166,6 +168,7 @@ function DisplayUserChat($user)
                 // and displays them
 
                 if ($chat_id != null) {
+                    // Loops through all the messages in the chat
                     while ($chat_message = mysqli_fetch_assoc($chat_messages)) {
                         $first_name = $chat_message["first_name"];
                         $message = $chat_message["message"];
@@ -176,7 +179,7 @@ function DisplayUserChat($user)
                         } else {
                             $message_class = "chat-message";
                         }
-
+                        // Displays the message
                         echo "
                             <div class='$message_class'>
                                 <p class='author'>

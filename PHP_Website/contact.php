@@ -5,6 +5,8 @@ $success = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once '../storage.php';
 
+    // Sanitise data input
+
     $email = $_POST["email"];
     $first_name = $_POST["first_name"];
     $last_name = $_POST["last_name"];
@@ -25,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $last_name = mysqli_real_escape_string($connection, $last_name);
     $message = mysqli_real_escape_string($connection, $message);
 
+    // Validate data input
     $valid = true;
 
     if (strlen($email) < 12 || strlen($email) > 50) {
@@ -48,11 +51,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($valid) {
+        // Create SQL query
         $sql = "
             INSERT INTO contact (email, first_name, last_name, message)
             VALUES ('$email', '$first_name', '$last_name', '$message')
         ";
 
+        // Execute SQL query
         if (mysqli_query($connection, $sql)) {
             $success = true;
         } else {
@@ -87,7 +92,7 @@ include 'includes/header.php';
                 echo '</div>';
             }
             ?>
-
+            <!-- Contact Form -->
             <form action="" method="POST">
                 <input aria-label="Email" type="email" name="email" minlength="12" maxlength="50" id="email" placeholder="Email" required>
                 <input type="text" aria-label="First Name" name="first_name" minlength="3" maxlength="20" id="first_name" placeholder="First Name" required>
