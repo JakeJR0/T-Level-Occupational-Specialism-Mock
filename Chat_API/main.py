@@ -23,7 +23,7 @@ app = Flask(__name__)
 # Secret key is used to secure the session cookie
 
 app.config["SECRET_KEY"] = "secret!"
-
+log = False
 
 # MySQL configurations
 
@@ -36,7 +36,13 @@ app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 # Middleware
 
 mysql = MySQL(app)
-socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+
+if log:
+    socketio = SocketIO(
+        app, cors_allowed_origins="*", logger=True, engineio_logger=True
+    )
+else:
+    socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 def security_to_user(security_key: int) -> int:
@@ -48,14 +54,35 @@ def security_to_user(security_key: int) -> int:
     """
 
     cursor = mysql.connection.cursor()
+    # Escapes the security key to prevent SQL injection
+    security_key = str(mysql.connection.escape(security_key))
 
-    cursor.execute("SELECT ID FROM users WHERE private_key = %s", (security_key,))
+    # Removes the quotes from the security key
+    security_key = security_key[2:-1]
 
+    # Creates the query
+    query = "SELECT ID FROM users WHERE private_key = %s;" % security_key
+
+    # Executes the query
+    cursor.execute(query)
+
+    # Fetches the result
     result = cursor.fetchone()
 
-    user_id = getattr(result, "ID", 0)
+    # Sets the user ID to 0
+    user_id = 0
 
+    try:
+        # Checks if the user ID is not null
+        if result["ID"]:
+            # Sets the user ID to the result
+            user_id = result["ID"]
+    except TypeError:
+        pass
+
+    # Checks if the user ID is 0
     if user_id == 0:
+        # Sends an error message to the client
         send(
             {
                 "error_code": 1,
@@ -66,6 +93,7 @@ def security_to_user(security_key: int) -> int:
             }
         )
 
+    # Returns the user ID
     return user_id
 
 
@@ -75,10 +103,14 @@ def user_id_to_first_name(user_id: int) -> str:
     the users first name.
     """
 
+    # Creates a cursor
     cursor = mysql.connection.cursor()
+    # Executes the query
     cursor.execute("SELECT first_name FROM users WHERE ID = %s", (user_id,))
+    # Fetches the result
     result = cursor.fetchone()
-    first_name = getattr(result, "first_name", "Unknown")
+    # Gets the first name from the result
+    first_name = result["first_name"]
 
     return first_name
 
@@ -92,7 +124,7 @@ def user_is_staff(user_id: int) -> bool:
     cursor.execute("SELECT user_type FROM users WHERE ID = %s", (user_id,))
 
     result = cursor.fetchone()
-    user_type = getattr(result, "user_type", "user")
+    user_type = result["user_type"]
 
     is_staff = False
 
@@ -116,7 +148,7 @@ def get_current_chat_id(user_id: int) -> int:
     )
 
     result = cursor.fetchone()
-    chat_id = getattr(result, "ID", 0)
+    chat_id = result["ID"]
 
     return chat_id
 
@@ -127,6 +159,7 @@ def user_owns_chat_id(user_id: int, chat_id: int) -> bool:
     """
 
     cursor = mysql.connection.cursor()
+
     cursor.execute(
         "SELECT ID FROM support_chat WHERE user_id = %s AND ID = %s", (user_id, chat_id)
     )
