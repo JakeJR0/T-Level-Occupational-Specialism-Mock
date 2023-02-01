@@ -32,7 +32,16 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         }
 
         $end_url = "./purchase.php?confirmed=true&" . $purchase_type . "=" . $_GET[$purchase_type];
-        $cancelled_url = "./index.php";
+        // Cancelled URL redirects to the either the forum or article page with the ID of the forum or article
+
+        $cancelled_url = "";
+
+        if ($purchase_type == "forum") {
+            $cancelled_url = "./forum.php?forum=" . $_GET[$purchase_type];
+        } else if ($purchase_type == "article") {
+            $cancelled_url = "./articles.php?article=" . $_GET[$purchase_type];
+        }
+
 ?>
 
         <!DOCTYPE html>
@@ -46,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             <script type="text/javascript">
                 const purchaseType = "<?= $purchase_type ?>"
                 const endUrl = "<?= $end_url ?>"
-                const cancelUrl = "<?= $cancelled_url ?>"
+                const cancelledUrl = "<?= $cancelled_url ?>"
             </script>
             <script src="./static/JS/confirmPurchase.js"></script>
         </head>
@@ -58,15 +67,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
         </html>
     <?php
-        exit();
-    }
-
-    if (isset($_GET["article"])) {
-        HandleArticlePurchase($article);
-    } else if (isset($_GET["forum"])) {
-        HandleForumPurchase($forum);
     } else {
-        header("Location: /index.php");
+        if (isset($_GET["article"])) {
+            HandleArticlePurchase($article);
+        } else if (isset($_GET["forum"])) {
+            HandleForumPurchase($forum);
+        } else {
+            header("Location: /index.php");
+        }
     }
 }
 
