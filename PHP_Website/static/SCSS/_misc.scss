@@ -267,6 +267,13 @@
         right: 50%;
     }
 
+    .center-middle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
     .faded-text {
         color: rgba(0, 0, 0, 0.5);
     }
@@ -569,6 +576,23 @@
         width: 90%;
         margin-bottom: 1rem;
     }
+}
+
+.main-link {
+    font-size: 2rem;
+
+    &.large {
+        font-size: 3rem;
+    }
+
+    &.small {
+        font-size: 1rem;
+    }
+
+    &.medium {
+        font-size: 1.5rem;
+    }
+
 }
 
 @media screen and (max-height: 800px) {
