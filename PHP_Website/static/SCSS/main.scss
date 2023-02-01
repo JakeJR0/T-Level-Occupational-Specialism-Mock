@@ -45,6 +45,10 @@ body {
             margin-top: 24px;
         }
     }
+
+    &.space {
+        margin-bottom: 5rem;
+    }
 }
 
 @media screen and (max-height: 800px) {

@@ -29,6 +29,9 @@ body {
 .page-title p.description {
   margin-top: 24px;
 }
+.page-title.space {
+  margin-bottom: 5rem;
+}
 
 @media screen and (max-height: 800px) {
   .page-title h1 {
@@ -618,6 +621,12 @@ body {
   bottom: 20px;
   right: 50%;
 }
+.text-container .center-middle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .text-container .faded-text {
   color: rgba(0, 0, 0, 0.5);
 }
@@ -871,6 +880,19 @@ body {
 .video-container iframe, .video-container video {
   width: 90%;
   margin-bottom: 1rem;
+}
+
+.main-link {
+  font-size: 2rem;
+}
+.main-link.large {
+  font-size: 3rem;
+}
+.main-link.small {
+  font-size: 1rem;
+}
+.main-link.medium {
+  font-size: 1.5rem;
 }
 
 @media screen and (max-height: 800px) {
