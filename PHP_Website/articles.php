@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $article_id = strip_tags($article_id);
         $article_id = mysqli_real_escape_string($connection, $article_id);
         $article_sql = "
-            SELECT users.first_name, users.last_name, articles.title, articles.content, DATE_FORMAT(articles.last_updated, '%d/%m/%Y') AS last_updated, articles.price
+            SELECT articles.ID, users.first_name, users.last_name, articles.title, articles.content, DATE_FORMAT(articles.last_updated, '%d/%m/%Y') AS last_updated, articles.price
             FROM articles
             INNER JOIN users ON articles.creator_id = users.ID
             WHERE articles.ID = $article_id
@@ -27,12 +27,18 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $article_price = number_format($article_price, 2);
         $include_purchase_button = false;
         if ($article_price > 0) {
+            if (!isset($_SESSION["user"])) {
+                header("Location: login.php");
+                return;
+            }
+
+
             $user = $_SESSION["user"];
             $user_id = $user["ID"] ?? null;
             $paid_sql = "
                 SELECT ID
-                FROM purchases
-                WHERE article_id = $article_id AND user_id = {$user_id}
+                FROM article_purchase_history
+                WHERE item_id = $article_id AND user_id = {$user_id}
             ";
 
             $paid = mysqli_query($connection, $paid_sql);
@@ -162,6 +168,7 @@ function DisplayArticle($article, $include_purchase_button)
     $user_last_name = $article["last_name"];
     $user_full_name = $user_first_name . " " . $user_last_name;
 
+    $article_id = $article["ID"];
     $article_title = $article["title"];
     $article_content = $article["content"];
     $article_last_updated = $article["last_updated"];
@@ -183,14 +190,16 @@ function DisplayArticle($article, $include_purchase_button)
             <p>Written by <?= $user_full_name ?></p>
         </div>
         <div class="text-container">
-            <?= $article_content ?>
+            <div>
+                <h2 class="center-text"><?= $article_content ?></h2>
+                <?php
+                if ($include_purchase_button) {
+                    echo "<a class='btn center-middle' href='purchase.php?article={$article_id}'>Purchase Article</a>";
+                }
+                ?>
+            </div>
             <a class='bottom-left btn faced-text' href='articles.php'>Back</a>
             <p class="faded-text bottom-right">Last Updated on <?= $article_last_updated ?></p>
-            <?php
-            if ($include_purchase_button) {
-                echo "<a class='bottom-middle btn' href='purchase.php?article={$article_id}'>Purchase Article</a>";
-            }
-            ?>
         </div>
     </body>
 
