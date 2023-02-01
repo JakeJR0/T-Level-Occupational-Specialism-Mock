@@ -38,10 +38,10 @@ ToKa Fitness currently provides customers with:
 
 - [X] Login
 - [X] Sign Up
-- [ ] Forum
+- [ ] Forum (Removed due to time constraints)
 - [X] Free Content
 - [X] Paid Content
-- [ ] Chat
+- [X] Chat
 - [X] Contact Form
 - [X] About Page
 
@@ -49,11 +49,8 @@ ToKa Fitness currently provides customers with:
 
 - [X] User can Login and Register
 - [X] User can view free content
-- [ ] User can purchase additional content on the site
-- [ ] User can post and read forum posts
-- [ ] Users can delete and modify their own posts
-- [ ] Admin can delete and modify any post
-- [ ] Website is accessible for visually impaired users
+- [X] User can purchase additional content on the site
+- [X] User can post and read article posts
 
 ## Languages
 
@@ -87,5 +84,4 @@ ToKa Fitness currently provides customers with:
 - Article Page
 - Login Page
 - Sign-up Page
-- Forum Pages
 - About Page
